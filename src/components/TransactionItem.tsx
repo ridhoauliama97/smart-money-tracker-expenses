@@ -2,7 +2,7 @@ import { Trash2 } from "lucide-react";
 import { CategoryIcon } from "./CategoryIcon";
 import type { Transaction } from "@/lib/types";
 import { useFinance } from "@/store/useFinance";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, formatDateLong, formatTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -19,18 +19,15 @@ export function TransactionItem({ tx, onClick }: Props) {
   return (
     <div className="group flex items-center gap-3 rounded-2xl px-3 py-2.5 transition-colors hover:bg-surface-2">
       <CategoryIcon name={cat?.icon ?? "Circle"} color={cat?.color} />
-      <button
-        onClick={onClick}
-        className="min-w-0 flex-1 text-left"
-      >
-        <div className="truncate text-sm font-medium text-foreground">{cat?.name ?? "Lainnya"}</div>
-        {tx.note ? (
-          <div className="truncate text-xs text-muted-foreground">{tx.note}</div>
-        ) : (
-          <div className="text-xs text-muted-foreground">{new Date(tx.date).toLocaleDateString("id-ID")}</div>
-        )}
+      <button onClick={onClick} className="min-w-0 flex-1 text-left">
+        <div className="truncate text-sm font-medium text-foreground">
+          {cat?.name ?? "Lainnya"}
+        </div>
+        <div className="truncate text-xs text-muted-foreground">
+          {tx.note ? tx.note : formatDateLong(tx.date)}
+        </div>
       </button>
-      <div className="text-right">
+      <div className="flex flex-col items-end gap-0.5">
         <div
           className={cn(
             "tnum text-sm font-semibold",
@@ -38,6 +35,9 @@ export function TransactionItem({ tx, onClick }: Props) {
           )}
         >
           {tx.type === "income" ? "+" : "−"} {formatCurrency(tx.amount, currency)}
+        </div>
+        <div className="tnum text-[10px] text-muted-foreground">
+          {formatTime(tx.createdAt)}
         </div>
       </div>
       <button

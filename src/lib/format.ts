@@ -34,7 +34,24 @@ export function formatDateLabel(iso: string): string {
   if (diffDays === 0) return "Hari ini";
   if (diffDays === 1) return "Kemarin";
   if (diffDays > 1 && diffDays < 7) return `${diffDays} hari lalu`;
-  return d.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+  return formatDateLong(iso);
+}
+
+export function formatDateLong(iso: string): string {
+  const [y, m, d] = iso.split("-").map(Number);
+  if (!y || !m || !d) return iso;
+  const months = [
+    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+    "Juli", "Agustus", "September", "Oktober", "November", "Desember",
+  ];
+  return `${String(d).padStart(2, "0")} ${months[m - 1]} ${y}`;
+}
+
+export function formatTime(ts: number): string {
+  const d = new Date(ts);
+  const h = String(d.getHours()).padStart(2, "0");
+  const m = String(d.getMinutes()).padStart(2, "0");
+  return `${h}:${m}`;
 }
 
 export function todayISO(): string {
