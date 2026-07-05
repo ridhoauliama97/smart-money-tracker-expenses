@@ -110,7 +110,9 @@ export const useFinance = create<State>()(
     {
       name: "money-tracker-v1",
       storage: createJSONStorage(() =>
-        typeof window !== "undefined" ? window.localStorage : (noopStorage as Storage),
+        typeof window !== "undefined"
+          ? window.localStorage
+          : (noopStorage as unknown as Storage),
       ),
       partialize: (s) => ({
         transactions: s.transactions,
