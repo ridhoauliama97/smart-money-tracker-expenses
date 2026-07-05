@@ -1,7 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef } from "react";
 import { toast } from "sonner";
-import { Download, Upload, RotateCcw, FileText, FileSpreadsheet } from "lucide-react";
+import {
+  Download,
+  Upload,
+  RotateCcw,
+  FileText,
+  FileSpreadsheet,
+  Braces,
+  Table,
+  ChevronDown,
+} from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { exportPDF, exportXLSX } from "@/lib/export";
@@ -16,6 +25,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useFinance } from "@/store/useFinance";
 
 export const Route = createFileRoute("/settings")({
