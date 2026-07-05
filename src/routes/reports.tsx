@@ -238,7 +238,7 @@ function Reports() {
       {/* Line */}
       <Card title="Tren Saldo">
         {balanceLine.length < 2 ? (
-          <EmptyChart />
+          <EmptyChart message="Tren saldo akan muncul setelah kamu punya transaksi di lebih dari 1 hari." />
         ) : (
           <div className="h-48">
             <ResponsiveContainer>
