@@ -305,10 +305,10 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
   );
 }
 
-function EmptyChart() {
+function EmptyChart({ message = "Data belum tersedia" }: { message?: string }) {
   return (
-    <div className="grid h-40 place-items-center rounded-xl bg-surface-2 text-xs text-muted-foreground">
-      Data belum tersedia
+    <div className="grid h-40 place-items-center rounded-xl bg-surface-2 px-4 text-center text-xs text-muted-foreground">
+      {message}
     </div>
   );
 }
