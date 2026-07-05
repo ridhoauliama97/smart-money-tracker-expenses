@@ -72,6 +72,27 @@ function SettingsPage() {
     }
   };
 
+  const runReport = (kind: "pdf" | "xlsx") => {
+    const state = useFinance.getState();
+    if (state.transactions.length === 0) {
+      toast.error("Tidak ada data untuk di-export");
+      return;
+    }
+    const payload = {
+      transactions: state.transactions,
+      categories: state.categories,
+      currency: state.settings.currency,
+      periodLabel: "Semua data",
+    };
+    try {
+      if (kind === "pdf") exportPDF(payload);
+      else exportXLSX(payload);
+      toast.success(`Export ${kind.toUpperCase()} berhasil`);
+    } catch {
+      toast.error(`Gagal export ${kind.toUpperCase()}`);
+    }
+  };
+
   return (
     <div className="p-4">
       <div className="pt-2">
