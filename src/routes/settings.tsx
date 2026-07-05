@@ -115,6 +115,7 @@ function SettingsPage() {
     URL.revokeObjectURL(url);
     toast.success("Export CSV berhasil");
   };
+  const runReport = (kind: "pdf" | "xlsx") => {
     const state = useFinance.getState();
     if (state.transactions.length === 0) {
       toast.error("Tidak ada data untuk di-export");
