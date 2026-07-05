@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef } from "react";
 import { toast } from "sonner";
-import { Download, Upload, RotateCcw } from "lucide-react";
+import { Download, Upload, RotateCcw, FileText, FileSpreadsheet } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
+import { exportPDF, exportXLSX } from "@/lib/export";
 import {
   AlertDialog,
   AlertDialogAction,
