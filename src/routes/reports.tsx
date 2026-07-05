@@ -16,8 +16,10 @@ import {
 } from "recharts";
 import { AppShell } from "@/components/AppShell";
 import { useFinance } from "@/store/useFinance";
-import { formatCurrency, formatCompact } from "@/lib/format";
+import { formatCurrency, formatCompact, formatDateLong } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { exportPDF, exportXLSX } from "@/lib/export";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/reports")({
   head: () => ({
@@ -123,6 +125,33 @@ function Reports() {
   const exportJSON = () => {
     const data = { transactions, categories, budgets: useFinance.getState().budgets };
     downloadFile("money-tracker.json", JSON.stringify(data, null, 2), "application/json");
+  };
+
+  const periodLabel = useMemo(() => {
+    if (filtered.length === 0) return "Tidak ada data";
+    const dates = filtered.map((t) => t.date).sort();
+    const start = dates[0];
+    const end = dates[dates.length - 1];
+    const suffix =
+      period === "week" ? " (Minggu)" :
+      period === "month" ? " (Bulan)" :
+      period === "3m" ? " (3 Bulan)" : "";
+    return `${formatDateLong(start)} – ${formatDateLong(end)}${suffix}`;
+  }, [filtered, period]);
+
+  const runExport = (kind: "pdf" | "xlsx") => {
+    if (filtered.length === 0) {
+      toast.error("Tidak ada data untuk di-export");
+      return;
+    }
+    const payload = { transactions: filtered, categories, currency, periodLabel };
+    try {
+      if (kind === "pdf") exportPDF(payload);
+      else exportXLSX(payload);
+      toast.success(`Export ${kind.toUpperCase()} berhasil`);
+    } catch {
+      toast.error(`Gagal export ${kind.toUpperCase()}`);
+    }
   };
 
   return (
@@ -271,6 +300,18 @@ function Reports() {
 
       {/* Export */}
       <div className="mt-4 grid grid-cols-2 gap-3">
+        <button
+          onClick={() => runExport("pdf")}
+          className="rounded-2xl bg-surface p-3 text-sm font-medium transition hover:bg-surface-2"
+        >
+          Export PDF
+        </button>
+        <button
+          onClick={() => runExport("xlsx")}
+          className="rounded-2xl bg-surface p-3 text-sm font-medium transition hover:bg-surface-2"
+        >
+          Export Excel
+        </button>
         <button
           onClick={exportCSV}
           className="rounded-2xl bg-surface p-3 text-sm font-medium transition hover:bg-surface-2"

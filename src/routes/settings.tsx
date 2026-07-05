@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef } from "react";
 import { toast } from "sonner";
-import { Download, Upload, RotateCcw } from "lucide-react";
+import { Download, Upload, RotateCcw, FileText, FileSpreadsheet } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
+import { exportPDF, exportXLSX } from "@/lib/export";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -71,6 +72,27 @@ function SettingsPage() {
     }
   };
 
+  const runReport = (kind: "pdf" | "xlsx") => {
+    const state = useFinance.getState();
+    if (state.transactions.length === 0) {
+      toast.error("Tidak ada data untuk di-export");
+      return;
+    }
+    const payload = {
+      transactions: state.transactions,
+      categories: state.categories,
+      currency: state.settings.currency,
+      periodLabel: "Semua data",
+    };
+    try {
+      if (kind === "pdf") exportPDF(payload);
+      else exportXLSX(payload);
+      toast.success(`Export ${kind.toUpperCase()} berhasil`);
+    } catch {
+      toast.error(`Gagal export ${kind.toUpperCase()}`);
+    }
+  };
+
   return (
     <div className="p-4">
       <div className="pt-2">
@@ -135,6 +157,20 @@ function SettingsPage() {
             className="hidden"
             onChange={handleImport}
           />
+          <Button
+            variant="outline"
+            onClick={() => runReport("pdf")}
+            className="h-12 rounded-xl border-border bg-surface"
+          >
+            <FileText className="mr-2 h-4 w-4" /> Export PDF
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => runReport("xlsx")}
+            className="h-12 rounded-xl border-border bg-surface"
+          >
+            <FileSpreadsheet className="mr-2 h-4 w-4" /> Export Excel
+          </Button>
         </div>
       </Section>
 
