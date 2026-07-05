@@ -7,6 +7,13 @@ import { Input } from "@/components/ui/input";
 import { useFinance } from "@/store/useFinance";
 import { formatDateLabel } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const Route = createFileRoute("/history")({
   head: () => ({
