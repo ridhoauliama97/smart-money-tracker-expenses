@@ -99,18 +99,19 @@ function History() {
           ))}
         </div>
 
-        <select
-          value={catFilter}
-          onChange={(e) => setCatFilter(e.target.value)}
-          className="w-full rounded-xl border border-border bg-surface px-3 py-2 text-sm"
-        >
-          <option value="all">Semua kategori</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
+        <Select value={catFilter} onValueChange={setCatFilter}>
+          <SelectTrigger className="h-11 rounded-xl border-border bg-surface px-3 text-sm">
+            <SelectValue placeholder="Semua kategori" />
+          </SelectTrigger>
+          <SelectContent className="max-h-72 rounded-xl border-border bg-surface">
+            <SelectItem value="all">Semua kategori</SelectItem>
+            {categories.map((c) => (
+              <SelectItem key={c.id} value={c.id}>
+                {c.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="mt-4">
