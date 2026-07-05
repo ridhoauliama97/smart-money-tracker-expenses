@@ -136,6 +136,20 @@ function SettingsPage() {
             className="hidden"
             onChange={handleImport}
           />
+          <Button
+            variant="outline"
+            onClick={() => runReport("pdf")}
+            className="h-12 rounded-xl border-border bg-surface"
+          >
+            <FileText className="mr-2 h-4 w-4" /> Export PDF
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => runReport("xlsx")}
+            className="h-12 rounded-xl border-border bg-surface"
+          >
+            <FileSpreadsheet className="mr-2 h-4 w-4" /> Export Excel
+          </Button>
         </div>
       </Section>
 
