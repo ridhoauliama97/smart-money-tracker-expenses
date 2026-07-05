@@ -14,6 +14,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { FileText, FileSpreadsheet, Braces, Table } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useFinance } from "@/store/useFinance";
 import { formatCurrency, formatCompact, formatDateLong } from "@/lib/format";
