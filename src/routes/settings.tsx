@@ -179,13 +179,30 @@ function SettingsPage() {
       {/* Backup */}
       <Section title="Backup Data">
         <div className="grid grid-cols-2 gap-2">
-          <Button
-            variant="outline"
-            onClick={exportBackup}
-            className="h-12 rounded-xl border-border bg-surface"
-          >
-            <Download className="mr-2 h-4 w-4" /> Export
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="h-12 w-full rounded-xl border-border bg-surface"
+              >
+                <Download className="mr-2 h-4 w-4" /> Export <ChevronDown className="ml-auto h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56">
+              <DropdownMenuItem onClick={() => runReport("xlsx")} className="cursor-pointer">
+                <FileSpreadsheet className="mr-2 h-4 w-4" /> Excel
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => runReport("pdf")} className="cursor-pointer">
+                <FileText className="mr-2 h-4 w-4" /> PDF
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={exportBackup} className="cursor-pointer">
+                <Braces className="mr-2 h-4 w-4" /> JSON
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={exportCSV} className="cursor-pointer">
+                <Table className="mr-2 h-4 w-4" /> CSV
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button
             variant="outline"
             onClick={() => fileRef.current?.click()}
@@ -200,20 +217,6 @@ function SettingsPage() {
             className="hidden"
             onChange={handleImport}
           />
-          <Button
-            variant="outline"
-            onClick={() => runReport("pdf")}
-            className="h-12 rounded-xl border-border bg-surface"
-          >
-            <FileText className="mr-2 h-4 w-4" /> Export PDF
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => runReport("xlsx")}
-            className="h-12 rounded-xl border-border bg-surface"
-          >
-            <FileSpreadsheet className="mr-2 h-4 w-4" /> Export Excel
-          </Button>
         </div>
       </Section>
 
