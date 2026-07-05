@@ -87,7 +87,34 @@ function SettingsPage() {
     }
   };
 
-  const runReport = (kind: "pdf" | "xlsx") => {
+  const exportCSV = () => {
+    const state = useFinance.getState();
+    const txs = state.transactions;
+    const cats = state.categories;
+    if (txs.length === 0) {
+      toast.error("Tidak ada data untuk di-export");
+      return;
+    }
+    const rows = [
+      ["date", "type", "amount", "category", "note"],
+      ...txs.map((t) => [
+        t.date,
+        t.type,
+        String(t.amount),
+        cats.find((c) => c.id === t.categoryId)?.name ?? "",
+        t.note?.replace(/"/g, '""') ?? "",
+      ]),
+    ];
+    const csv = rows.map((r) => r.map((c) => `"${c}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `money-tracker-laporan-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Export CSV berhasil");
+  };
     const state = useFinance.getState();
     if (state.transactions.length === 0) {
       toast.error("Tidak ada data untuk di-export");
