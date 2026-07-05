@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef } from "react";
 import { toast } from "sonner";
 import { Download, Upload, RotateCcw } from "lucide-react";
@@ -100,15 +100,15 @@ function SettingsPage() {
 
       {/* Kategori link */}
       <Section title="Kategori & Budget">
-        <a
-          href="/categories"
+        <Link
+          to="/categories"
           className="block rounded-2xl bg-surface p-4 text-sm transition hover:bg-surface-2"
         >
           <div className="font-medium">Kelola kategori & budget</div>
           <div className="mt-0.5 text-xs text-muted-foreground">
             Tambah kategori baru, atur limit budget bulanan.
           </div>
-        </a>
+        </Link>
       </Section>
 
       {/* Backup */}
