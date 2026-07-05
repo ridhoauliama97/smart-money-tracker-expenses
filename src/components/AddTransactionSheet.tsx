@@ -187,6 +187,9 @@ export function AddTransactionSheet({ open, onOpenChange }: Props) {
                 onChange={(e) => setDate(e.target.value)}
                 className="bg-surface"
               />
+              <div className="mt-1 text-[11px] text-muted-foreground">
+                {formatDateLong(date)}
+              </div>
             </div>
             <div>
               <label className="mb-1 block text-xs uppercase tracking-wider text-muted-foreground">
