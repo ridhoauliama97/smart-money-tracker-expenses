@@ -301,6 +301,18 @@ function Reports() {
       {/* Export */}
       <div className="mt-4 grid grid-cols-2 gap-3">
         <button
+          onClick={() => runExport("pdf")}
+          className="rounded-2xl bg-surface p-3 text-sm font-medium transition hover:bg-surface-2"
+        >
+          Export PDF
+        </button>
+        <button
+          onClick={() => runExport("xlsx")}
+          className="rounded-2xl bg-surface p-3 text-sm font-medium transition hover:bg-surface-2"
+        >
+          Export Excel
+        </button>
+        <button
           onClick={exportCSV}
           className="rounded-2xl bg-surface p-3 text-sm font-medium transition hover:bg-surface-2"
         >
