@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CategoryIcon } from "./CategoryIcon";
 import { useFinance } from "@/store/useFinance";
-import { formatCurrency, todayISO } from "@/lib/format";
+import { formatCurrency, formatDateLong, todayISO } from "@/lib/format";
 import type { TxType } from "@/lib/types";
 
 interface Props {
