@@ -14,6 +14,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { FileText, FileSpreadsheet, Braces, Table } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useFinance } from "@/store/useFinance";
 import { formatCurrency, formatCompact, formatDateLong } from "@/lib/format";
@@ -299,32 +300,34 @@ function Reports() {
       </Card>
 
       {/* Export */}
-      <div className="mt-4 grid grid-cols-2 gap-3">
-        <button
-          onClick={() => runExport("pdf")}
-          className="rounded-2xl bg-surface p-3 text-sm font-medium transition hover:bg-surface-2"
-        >
-          Export PDF
-        </button>
-        <button
-          onClick={() => runExport("xlsx")}
-          className="rounded-2xl bg-surface p-3 text-sm font-medium transition hover:bg-surface-2"
-        >
-          Export Excel
-        </button>
-        <button
-          onClick={exportCSV}
-          className="rounded-2xl bg-surface p-3 text-sm font-medium transition hover:bg-surface-2"
-        >
-          Export CSV
-        </button>
-        <button
-          onClick={exportJSON}
-          className="rounded-2xl bg-surface p-3 text-sm font-medium transition hover:bg-surface-2"
-        >
-          Export JSON
-        </button>
-      </div>
+      <Card title="Export Laporan">
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={() => runExport("pdf")}
+            className="flex items-center justify-center gap-2 rounded-xl bg-surface py-3 text-sm font-medium transition hover:bg-surface-2"
+          >
+            <FileText className="h-4 w-4 text-muted-foreground" /> PDF
+          </button>
+          <button
+            onClick={() => runExport("xlsx")}
+            className="flex items-center justify-center gap-2 rounded-xl bg-surface py-3 text-sm font-medium transition hover:bg-surface-2"
+          >
+            <FileSpreadsheet className="h-4 w-4 text-muted-foreground" /> Excel
+          </button>
+          <button
+            onClick={exportCSV}
+            className="flex items-center justify-center gap-2 rounded-xl bg-surface py-3 text-sm font-medium transition hover:bg-surface-2"
+          >
+            <Table className="h-4 w-4 text-muted-foreground" /> CSV
+          </button>
+          <button
+            onClick={exportJSON}
+            className="flex items-center justify-center gap-2 rounded-xl bg-surface py-3 text-sm font-medium transition hover:bg-surface-2"
+          >
+            <Braces className="h-4 w-4 text-muted-foreground" /> JSON
+          </button>
+        </div>
+      </Card>
     </div>
   );
 }
