@@ -161,14 +161,14 @@ function Reports() {
           <EmptyChart />
         ) : (
           <>
-            <div className="h-56">
+            <div className="relative h-56">
               <ResponsiveContainer>
                 <PieChart>
                   <Pie
                     data={pieData}
                     dataKey="value"
-                    innerRadius={55}
-                    outerRadius={85}
+                    innerRadius={68}
+                    outerRadius={92}
                     paddingAngle={2}
                     stroke="none"
                   >
@@ -182,10 +182,14 @@ function Reports() {
                   />
                 </PieChart>
               </ResponsiveContainer>
-            </div>
-            <div className="tnum -mt-40 mb-6 text-center">
-              <div className="text-xs text-muted-foreground">Total</div>
-              <div className="text-lg font-bold">{formatCurrency(totalExpense, currency)}</div>
+              <div className="tnum pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Total
+                </div>
+                <div className="max-w-[110px] truncate text-center text-sm font-bold">
+                  {formatCurrency(totalExpense, currency)}
+                </div>
+              </div>
             </div>
             <div className="mt-4 space-y-1.5">
               {pieData.slice(0, 6).map((p) => (
