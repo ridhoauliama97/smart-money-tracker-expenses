@@ -127,6 +127,33 @@ function Reports() {
     downloadFile("money-tracker.json", JSON.stringify(data, null, 2), "application/json");
   };
 
+  const periodLabel = useMemo(() => {
+    if (filtered.length === 0) return "Tidak ada data";
+    const dates = filtered.map((t) => t.date).sort();
+    const start = dates[0];
+    const end = dates[dates.length - 1];
+    const suffix =
+      period === "week" ? " (Minggu)" :
+      period === "month" ? " (Bulan)" :
+      period === "3m" ? " (3 Bulan)" : "";
+    return `${formatDateLong(start)} – ${formatDateLong(end)}${suffix}`;
+  }, [filtered, period]);
+
+  const runExport = (kind: "pdf" | "xlsx") => {
+    if (filtered.length === 0) {
+      toast.error("Tidak ada data untuk di-export");
+      return;
+    }
+    const payload = { transactions: filtered, categories, currency, periodLabel };
+    try {
+      if (kind === "pdf") exportPDF(payload);
+      else exportXLSX(payload);
+      toast.success(`Export ${kind.toUpperCase()} berhasil`);
+    } catch {
+      toast.error(`Gagal export ${kind.toUpperCase()}`);
+    }
+  };
+
   return (
     <div className="p-4">
       <div className="pt-2">
