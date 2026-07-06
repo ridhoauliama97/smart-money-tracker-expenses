@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo } from "react";
-import { ArrowDownRight, ArrowUpRight, Sparkles, TrendingUp } from "lucide-react";
+import { useMemo, useState } from "react";
+import { BanknoteArrowDown, BanknoteArrowUp, TrendingUp, Eye, EyeOff, User } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { TransactionItem } from "@/components/TransactionItem";
 import { CategoryIcon } from "@/components/CategoryIcon";
@@ -27,6 +27,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const [hidden, setHidden] = useState(false);
   const transactions = useFinance((s) => s.transactions);
   const budgets = useFinance((s) => s.budgets);
   const categories = useFinance((s) => s.categories);
@@ -47,6 +48,46 @@ function Home() {
     }
     return { balance: bal, incomeMonth: inc, expenseMonth: exp };
   }, [transactions]);
+
+  const sparklineBalances = useMemo(() => {
+    const today = new Date();
+    const days: string[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      days.push(`${y}-${m}-${day}`);
+    }
+    const sorted = [...transactions].sort((a, b) => (a.date < b.date ? -1 : 1));
+    const balances: number[] = [];
+    let running = 0;
+    let txIdx = 0;
+    for (const day of days) {
+      while (txIdx < sorted.length && sorted[txIdx].date <= day) {
+        running += sorted[txIdx].type === "income" ? sorted[txIdx].amount : -sorted[txIdx].amount;
+        txIdx++;
+      }
+      balances.push(running);
+    }
+    return balances;
+  }, [transactions]);
+
+  const sparklinePoints = useMemo(() => {
+    if (sparklineBalances.length < 2) return "";
+    const min = Math.min(...sparklineBalances);
+    const max = Math.max(...sparklineBalances);
+    const range = max - min || 1;
+    const w = 300 / (sparklineBalances.length - 1);
+    return sparklineBalances
+      .map((v, i) => {
+        const x = i * w;
+        const y = 30 - ((v - min) / range) * 24;
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      })
+      .join(" ");
+  }, [sparklineBalances]);
 
   const recent = transactions.slice(0, 7);
   const grouped = useMemo(() => groupByDate(recent), [recent]);
@@ -70,38 +111,87 @@ function Home() {
 
   return (
     <div className="p-4">
-      {/* Header */}
-      <div className="flex items-center justify-between pt-2">
+      {/* Topbar */}
+      <div className="flex items-start justify-between pt-2">
         <div>
-          <div className="text-xs text-muted-foreground">Selamat datang</div>
-          <div className="text-lg font-semibold">Money Tracker</div>
+          <div className="text-[13px] text-[#8B92A6]">Selamat datang</div>
+          <div className="mt-0.5 font-display text-[22px] font-semibold text-[#F3F5F8]">
+            Money Tracker
+          </div>
         </div>
-        <div className="grid h-10 w-10 place-items-center rounded-full bg-surface">
-          <Sparkles className="h-5 w-5 text-brand" />
+        <div className="relative hidden grid h-[42px] w-[42px] place-items-center rounded-[14px] border border-white/[0.07] bg-[#1B2130]">
+          <User className="h-5 w-5 text-[#8B92A6]" />
+          <div className="absolute right-[9px] top-[9px] h-[7px] w-[7px] rounded-full bg-[#C8FF52] shadow-[0_0_8px_#C8FF52]" />
         </div>
       </div>
 
-      {/* Balance card */}
-      <div className="relative mt-5 overflow-hidden rounded-3xl p-5 gradient-hero">
-        <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
-        <div className="relative">
-          <div className="text-xs font-medium uppercase tracking-wider text-white/70">
-            Total Saldo
+      {/* Hero card */}
+      <div className="relative mt-6 overflow-hidden rounded-[26px] border border-white/[0.06] p-6 gradient-hero">
+        <div
+          className="pointer-events-none absolute -right-[40%] -top-[40%] h-[220px] w-[220px] blur-sm"
+          style={{
+            background: "radial-gradient(circle, rgba(200,255,82,0.18), transparent 70%)",
+          }}
+        />
+        <div className="relative z-[2]">
+          {/* Label + eye toggle */}
+          <div className="flex items-center justify-between">
+            <span className="text-[12px] font-medium uppercase tracking-[1.2px] text-white/55">
+              Total saldo
+            </span>
+            <button
+              type="button"
+              onClick={() => setHidden((h) => !h)}
+              className="grid h-[30px] w-[30px] place-items-center rounded-[9px] border border-white/[0.1] bg-white/[0.08] text-white"
+            >
+              {hidden ? (
+                <EyeOff className="h-[15px] w-[15px]" />
+              ) : (
+                <Eye className="h-[15px] w-[15px]" />
+              )}
+            </button>
           </div>
-          <div key={balance} className="tnum animate-count mt-1 text-3xl font-bold text-white">
-            {formatCurrency(balance, currency)}
+          {/* Balance */}
+          <div className="font-mono text-[33px] font-semibold tracking-[-0.5px] text-white">
+            {hidden ? "Rp ••••••••" : formatCurrency(balance, currency)}
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-3">
+          {/* Sparkline */}
+          {sparklineBalances.length >= 2 && (
+            <div className="relative z-[2] mb-[18px] mt-[6px] h-[34px]">
+              <svg viewBox="0 0 300 34" preserveAspectRatio="none" className="h-full w-full">
+                <defs>
+                  <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#C8FF52" stopOpacity="0.22" />
+                    <stop offset="100%" stopColor="#C8FF52" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
+                <polyline
+                  points={sparklinePoints}
+                  fill="none"
+                  stroke="#C8FF52"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  opacity="0.9"
+                />
+                <polyline
+                  points={`${sparklinePoints} 300,34 0,34`}
+                  fill="url(#sparkFill)"
+                  stroke="none"
+                />
+              </svg>
+            </div>
+          )}
+          {/* Stat chips */}
+          <div className="grid grid-cols-2 gap-[10px]">
             <StatMini
               label="Pemasukan"
               value={formatCurrency(incomeMonth, currency)}
-              icon={<ArrowDownRight className="h-4 w-4" />}
               variant="income"
             />
             <StatMini
               label="Pengeluaran"
               value={formatCurrency(expenseMonth, currency)}
-              icon={<ArrowUpRight className="h-4 w-4" />}
               variant="expense"
             />
           </div>
@@ -110,33 +200,38 @@ function Home() {
 
       {/* Budget alerts */}
       {budgetsWithUsage.length > 0 && (
-        <div className="mt-5">
+        <div className="mt-6">
           <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-sm font-semibold">Budget Terpakai</h2>
-            <span className="text-xs text-muted-foreground">Bulan ini</span>
+            <h2 className="font-display text-base font-semibold text-[#F3F5F8]">Budget Terpakai</h2>
+            <span className="text-xs text-[#565D70]">Bulan ini</span>
           </div>
           <div className="space-y-2">
             {budgetsWithUsage.map(({ budget, spent, cat, pct }) => (
-              <div key={budget.id} className="rounded-2xl bg-surface p-3">
+              <div
+                key={budget.id}
+                className="rounded-2xl border border-white/[0.07] bg-[#1B2130] p-3"
+              >
                 <div className="flex items-center gap-3">
                   <CategoryIcon name={cat?.icon ?? "Circle"} color={cat?.color} size={16} />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="truncate text-sm font-medium">{cat?.name}</span>
+                      <span className="truncate text-sm font-medium text-[#F3F5F8]">
+                        {cat?.name}
+                      </span>
                       <span
                         className={cn(
                           "tnum text-xs font-semibold",
                           pct >= 100
-                            ? "text-expense"
+                            ? "text-[#FF6B7A]"
                             : pct >= 80
-                              ? "text-amber-400"
-                              : "text-income",
+                              ? "text-[#FFB648]"
+                              : "text-[#C8FF52]",
                         )}
                       >
                         {pct.toFixed(0)}%
                       </span>
                     </div>
-                    <div className="mt-1 text-[11px] text-muted-foreground tnum">
+                    <div className="mt-1 text-[11px] text-[#565D70] tnum">
                       {formatCurrency(spent, currency)} / {formatCurrency(budget.limit, currency)}
                     </div>
                     <Progress
@@ -144,10 +239,10 @@ function Home() {
                       className={cn(
                         "mt-2 h-1.5",
                         pct >= 100
-                          ? "[&>div]:bg-expense"
+                          ? "[&>div]:bg-[#FF6B7A]"
                           : pct >= 80
-                            ? "[&>div]:bg-amber-400"
-                            : "[&>div]:bg-income",
+                            ? "[&>div]:bg-[#FFB648]"
+                            : "[&>div]:bg-[#C8FF52]",
                       )}
                     />
                   </div>
@@ -158,22 +253,22 @@ function Home() {
         </div>
       )}
 
-      {/* Recent */}
+      {/* Transaksi Terbaru */}
       <div className="mt-6">
-        <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-sm font-semibold">Transaksi Terbaru</h2>
+        <div className="mb-1 flex items-center justify-between">
+          <h2 className="font-display text-base font-semibold text-[#F3F5F8]">Transaksi terbaru</h2>
+          <span className="text-[12.5px] font-medium text-[#1FE5B8]">Lihat semua</span>
         </div>
-
         {recent.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {grouped.map(([date, items]) => (
               <div key={date}>
-                <div className="mb-1 px-1 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                <div className="mb-2 text-[11.5px] font-semibold uppercase tracking-[1px] text-[#565D70]">
                   {formatDateLabel(date)}
                 </div>
-                <div className="rounded-2xl bg-surface/50 p-1">
+                <div>
                   {items.map((tx) => (
                     <TransactionItem key={tx.id} tx={tx} />
                   ))}
@@ -190,40 +285,45 @@ function Home() {
 function StatMini({
   label,
   value,
-  icon,
   variant,
 }: {
   label: string;
   value: string;
-  icon: React.ReactNode;
   variant: "income" | "expense";
 }) {
+  const isIncome = variant === "income";
   return (
-    <div className="rounded-2xl bg-black/25 p-3 backdrop-blur">
-      <div className="flex items-center gap-1.5 text-[11px] text-white/70">
-        <span
+    <div className="rounded-[16px] border border-white/[0.07] bg-white/[0.055] p-3">
+      <div className="flex items-center gap-[7px]">
+        <div
           className={cn(
-            "grid h-5 w-5 place-items-center rounded-full",
-            variant === "income" ? "bg-income/30 text-white" : "bg-expense/30 text-white",
+            "grid h-[22px] w-[22px] place-items-center rounded-[7px]",
+            isIncome
+              ? "bg-[rgba(200,255,82,0.16)] text-[#C8FF52]"
+              : "bg-[rgba(255,107,122,0.16)] text-[#FF6B7A]",
           )}
         >
-          {icon}
-        </span>
-        {label}
+          {isIncome ? (
+            <BanknoteArrowUp className="h-3 w-3" strokeWidth={2.4} />
+          ) : (
+            <BanknoteArrowDown className="h-3 w-3" strokeWidth={2.4} />
+          )}
+        </div>
+        <span className="text-[11.5px] text-white/55">{label}</span>
       </div>
-      <div className="tnum mt-1 truncate text-sm font-semibold text-white">{value}</div>
+      <div className="mt-2 font-mono text-[15px] font-semibold text-white">{value}</div>
     </div>
   );
 }
 
 function EmptyState() {
   return (
-    <div className="mt-6 flex flex-col items-center rounded-3xl border border-dashed border-border/70 p-8 text-center">
-      <div className="grid h-14 w-14 place-items-center rounded-2xl bg-surface">
-        <TrendingUp className="h-6 w-6 text-brand" />
+    <div className="mt-6 flex flex-col items-center rounded-3xl border border-dashed border-white/[0.07] p-8 text-center">
+      <div className="grid h-14 w-14 place-items-center rounded-2xl bg-[#1B2130]">
+        <TrendingUp className="h-6 w-6 text-[#C8FF52]" />
       </div>
-      <div className="mt-3 text-sm font-medium">Belum ada transaksi</div>
-      <div className="mt-1 text-xs text-muted-foreground">
+      <div className="mt-3 text-sm font-medium text-[#F3F5F8]">Belum ada transaksi</div>
+      <div className="mt-1 text-xs text-[#565D70]">
         Ketuk tombol + di bawah untuk mencatat transaksi pertama Anda.
       </div>
     </div>

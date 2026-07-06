@@ -20,10 +20,11 @@ export function CategoryIcon({ name, color, size = 20, className, bg = true }: P
 
   return (
     <div
-      className={cn("grid place-items-center rounded-xl shrink-0", className)}
+      className={cn("grid place-items-center shrink-0", className)}
       style={{
-        width: size + 20,
-        height: size + 20,
+        width: size + 22,
+        height: size + 22,
+        borderRadius: 13,
         backgroundColor: color ? `${color}22` : "var(--surface-2)",
         color: color ?? "var(--foreground)",
       }}

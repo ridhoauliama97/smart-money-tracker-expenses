@@ -14,10 +14,13 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { FileText, FileSpreadsheet, Braces, Table } from "lucide-react";
+import { CalendarIcon, RotateCcw, FileText, FileSpreadsheet, Braces, Table } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 import { AppShell } from "@/components/AppShell";
 import { useFinance } from "@/store/useFinance";
-import { formatCurrency, formatCompact, formatDateLong } from "@/lib/format";
+import { formatCurrency, formatCompact, formatDateLong, todayISO } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { exportPDF, exportXLSX } from "@/lib/export";
 import { toast } from "sonner";
@@ -39,16 +42,32 @@ export const Route = createFileRoute("/reports")({
   ),
 });
 
-type Period = "week" | "month" | "3m" | "all";
+type Period = "week" | "month" | "3m" | "custom";
+
+function isoToLocalDate(iso: string): Date {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, (m ?? 1) - 1, d ?? 1);
+}
+
+function localDateToISO(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
 
 function Reports() {
   const [period, setPeriod] = useState<Period>("month");
+  const [customFrom, setCustomFrom] = useState(todayISO());
+  const [customTo, setCustomTo] = useState(todayISO());
+  const [rangeOpen, setRangeOpen] = useState(false);
   const transactions = useFinance((s) => s.transactions);
   const categories = useFinance((s) => s.categories);
   const currency = useFinance((s) => s.settings.currency);
 
   const filtered = useMemo(() => {
-    if (period === "all") return transactions;
+    if (period === "custom")
+      return transactions.filter((t) => t.date >= customFrom && t.date <= customTo);
     const now = new Date();
     const start = new Date();
     if (period === "week") start.setDate(now.getDate() - 7);
@@ -56,7 +75,7 @@ function Reports() {
     if (period === "3m") start.setMonth(now.getMonth() - 3);
     const s = start.toISOString().slice(0, 10);
     return transactions.filter((t) => t.date >= s);
-  }, [transactions, period]);
+  }, [transactions, period, customFrom, customTo]);
 
   const pieData = useMemo(() => {
     const map = new Map<string, number>();
@@ -132,20 +151,21 @@ function Reports() {
   };
 
   const periodLabel = useMemo(() => {
+    if (period === "custom") return `${formatDateLong(customFrom)} – ${formatDateLong(customTo)}`;
     if (filtered.length === 0) return "Tidak ada data";
     const dates = filtered.map((t) => t.date).sort();
     const start = dates[0];
     const end = dates[dates.length - 1];
     const suffix =
       period === "week"
-        ? " (Minggu)"
+        ? " (7 Hari)"
         : period === "month"
-          ? " (Bulan)"
+          ? " (30 Hari)"
           : period === "3m"
-            ? " (3 Bulan)"
+            ? " (90 Hari)"
             : "";
     return `${formatDateLong(start)} – ${formatDateLong(end)}${suffix}`;
-  }, [filtered, period]);
+  }, [filtered, period, customFrom, customTo]);
 
   const runExport = (kind: "pdf" | "xlsx") => {
     if (filtered.length === 0) {
@@ -173,10 +193,10 @@ function Reports() {
       <div className="mt-4 grid grid-cols-4 gap-1 rounded-xl bg-surface p-1 text-xs">
         {(
           [
-            { k: "week", l: "Minggu" },
-            { k: "month", l: "Bulan" },
-            { k: "3m", l: "3 Bulan" },
-            { k: "all", l: "Semua" },
+            { k: "week", l: "7 Hari" },
+            { k: "month", l: "30 Hari" },
+            { k: "3m", l: "90 Hari" },
+            { k: "custom", l: "Custom" },
           ] as { k: Period; l: string }[]
         ).map((o) => (
           <button
@@ -191,6 +211,54 @@ function Reports() {
           </button>
         ))}
       </div>
+
+      {period === "custom" && (
+        <div className="mt-2">
+          <Popover open={rangeOpen} onOpenChange={setRangeOpen}>
+            <PopoverTrigger asChild>
+              <div className="relative">
+                <Button
+                  variant="outline"
+                  className="w-full justify-start rounded-xl border-border bg-surface pr-10 font-normal text-foreground hover:bg-surface-2"
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                  {customFrom === customTo
+                    ? formatDateLong(customFrom)
+                    : `${formatDateLong(customFrom)} – ${formatDateLong(customTo)}`}
+                </Button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCustomFrom(todayISO());
+                    setCustomTo(todayISO());
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1 text-muted-foreground transition hover:bg-surface-2 hover:text-foreground"
+                  aria-label="Reset tanggal"
+                >
+                  <RotateCcw className="h-4 w-4" />
+                </button>
+              </div>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-auto rounded-xl border-border bg-surface p-0"
+              align="start"
+            >
+              <Calendar
+                mode="range"
+                selected={{ from: isoToLocalDate(customFrom), to: isoToLocalDate(customTo) }}
+                onSelect={(range) => {
+                  if (!range) return;
+                  if (range.from) setCustomFrom(localDateToISO(range.from));
+                  if (range.to) setCustomTo(localDateToISO(range.to));
+                  if (range.from && range.to) setRangeOpen(false);
+                }}
+                numberOfMonths={1}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+      )}
 
       {/* Donut */}
       <Card title="Pengeluaran per Kategori">
@@ -223,7 +291,7 @@ function Reports() {
                 <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
                   Total
                 </div>
-                <div className="max-w-[110px] truncate text-center text-sm font-bold">
+                <div className="max-w-27.5 truncate text-center text-sm font-bold">
                   {formatCurrency(totalExpense, currency)}
                 </div>
               </div>

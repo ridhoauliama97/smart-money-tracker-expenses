@@ -23,18 +23,18 @@ Dibangun dengan **TanStack Start** (React 19).
 
 ## 🛠️ Tech Stack
 
-| Kategori | Teknologi |
-| --- | --- |
-| Framework | [TanStack Start](https://tanstack.com/start) + React 19 |
-| Routing | TanStack Router (file-based routing) |
-| State management | Zustand (dengan `persist` middleware ke `localStorage`) |
-| Styling | Tailwind CSS v4 + [shadcn/ui](https://ui.shadcn.com/) (Radix UI primitives) |
-| Grafik | Recharts |
-| Form & Validasi | React Hook Form + Zod |
-| Export | jsPDF & jspdf-autotable (PDF), SheetJS/xlsx (Excel) |
-| Icon | Lucide React |
-| Bahasa | TypeScript |
-| Package manager | [Bun](https://bun.sh/) |
+| Kategori         | Teknologi                                                                   |
+| ---------------- | --------------------------------------------------------------------------- |
+| Framework        | [TanStack Start](https://tanstack.com/start) + React 19                     |
+| Routing          | TanStack Router (file-based routing)                                        |
+| State management | Zustand (dengan `persist` middleware ke `localStorage`)                     |
+| Styling          | Tailwind CSS v4 + [shadcn/ui](https://ui.shadcn.com/) (Radix UI primitives) |
+| Grafik           | Recharts                                                                    |
+| Form & Validasi  | React Hook Form + Zod                                                       |
+| Export           | jsPDF & jspdf-autotable (PDF), SheetJS/xlsx (Excel)                         |
+| Icon             | Lucide React                                                                |
+| Bahasa           | TypeScript                                                                  |
+| Package manager  | [Bun](https://bun.sh/)                                                      |
 
 ## 📂 Struktur Proyek
 
@@ -90,14 +90,14 @@ bun run preview
 
 ### Script lain yang tersedia
 
-| Perintah | Keterangan |
-| --- | --- |
-| `bun run dev` | Menjalankan server development |
-| `bun run build` | Build aplikasi untuk production |
-| `bun run build:dev` | Build dengan mode development |
-| `bun run preview` | Preview hasil build secara lokal |
-| `bun run lint` | Menjalankan ESLint |
-| `bun run format` | Merapikan format kode dengan Prettier |
+| Perintah            | Keterangan                            |
+| ------------------- | ------------------------------------- |
+| `bun run dev`       | Menjalankan server development        |
+| `bun run build`     | Build aplikasi untuk production       |
+| `bun run build:dev` | Build dengan mode development         |
+| `bun run preview`   | Preview hasil build secara lokal      |
+| `bun run lint`      | Menjalankan ESLint                    |
+| `bun run format`    | Merapikan format kode dengan Prettier |
 
 > Catatan: jika lebih nyaman menggunakan npm, jalankan `npm install` lalu ganti `bun run <script>` menjadi `npm run <script>`.
 
