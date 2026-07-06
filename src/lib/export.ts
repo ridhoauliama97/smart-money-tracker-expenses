@@ -7,7 +7,20 @@ import { formatCurrency, formatDateLong, todayISO } from "./format";
 const shortDate = (iso: string) => {
   const [y, m, d] = iso.split("-").map(Number);
   if (!y || !m || !d) return iso;
-  const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "Mei",
+    "Jun",
+    "Jul",
+    "Agu",
+    "Sep",
+    "Okt",
+    "Nov",
+    "Des",
+  ];
   return `${d} ${months[m - 1]} ${y}`;
 };
 
@@ -24,7 +37,10 @@ function periodRangeLabel(txs: Transaction[]): string {
   return `${formatDateLong(sorted[0])} – ${formatDateLong(sorted[sorted.length - 1])}`;
 }
 
-export function buildPeriodLabel(txs: Transaction[], period: "week" | "month" | "3m" | "all"): string {
+export function buildPeriodLabel(
+  txs: Transaction[],
+  period: "week" | "month" | "3m" | "all",
+): string {
   if (period === "all") return periodRangeLabel(txs);
   return periodRangeLabel(txs);
 }
@@ -77,20 +93,27 @@ export function exportPDF(payload: ExportPayload) {
 
   let cursorY = 180;
 
-  const drawSection = (title: string, rows: Transaction[], total: number, color: [number, number, number]) => {
+  const drawSection = (
+    title: string,
+    rows: Transaction[],
+    total: number,
+    color: [number, number, number],
+  ) => {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
     doc.setTextColor(color[0], color[1], color[2]);
     doc.text(title, 40, cursorY);
     cursorY += 6;
 
-    const body = rows.sort(sortByDate).map((t, i) => [
-      String(i + 1),
-      shortDate(t.date),
-      catName(t.categoryId),
-      t.note ?? "",
-      formatCurrency(t.amount, currency),
-    ]);
+    const body = rows
+      .sort(sortByDate)
+      .map((t, i) => [
+        String(i + 1),
+        shortDate(t.date),
+        catName(t.categoryId),
+        t.note ?? "",
+        formatCurrency(t.amount, currency),
+      ]);
     body.push([
       { content: "Subtotal", colSpan: 4, styles: { halign: "right", fontStyle: "bold" } } as never,
       { content: formatCurrency(total, currency), styles: { fontStyle: "bold" } } as never,
@@ -148,8 +171,12 @@ export function exportXLSX(payload: ExportPayload) {
   const { transactions, categories, currency, periodLabel } = payload;
   const catName = (id: string) => categories.find((c) => c.id === id)?.name ?? "-";
 
-  const totalIncome = transactions.filter((t) => t.type === "income").reduce((s, t) => s + t.amount, 0);
-  const totalExpense = transactions.filter((t) => t.type === "expense").reduce((s, t) => s + t.amount, 0);
+  const totalIncome = transactions
+    .filter((t) => t.type === "income")
+    .reduce((s, t) => s + t.amount, 0);
+  const totalExpense = transactions
+    .filter((t) => t.type === "expense")
+    .reduce((s, t) => s + t.amount, 0);
   const balance = totalIncome - totalExpense;
 
   const numFmt = currency === "IDR" ? '"Rp" #,##0' : "#,##0";
@@ -193,14 +220,7 @@ export function exportXLSX(payload: ExportPayload) {
       wsTx[ref].z = numFmt;
     }
   }
-  wsTx["!cols"] = [
-    { wch: 6 },
-    { wch: 14 },
-    { wch: 14 },
-    { wch: 20 },
-    { wch: 32 },
-    { wch: 18 },
-  ];
+  wsTx["!cols"] = [{ wch: 6 }, { wch: 14 }, { wch: 14 }, { wch: 20 }, { wch: 32 }, { wch: 18 }];
 
   // Breakdown
   const map = new Map<string, number>();

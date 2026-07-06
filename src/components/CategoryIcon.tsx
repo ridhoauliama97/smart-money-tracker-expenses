@@ -11,8 +11,8 @@ interface Props {
 }
 
 export function CategoryIcon({ name, color, size = 20, className, bg = true }: Props) {
-  const Icon = (Icons as unknown as Record<string, React.ComponentType<LucideProps>>)[name] ??
-    Icons.Circle;
+  const Icon =
+    (Icons as unknown as Record<string, React.ComponentType<LucideProps>>)[name] ?? Icons.Circle;
 
   if (!bg) {
     return <Icon size={size} color={color} className={className} />;
@@ -20,10 +20,7 @@ export function CategoryIcon({ name, color, size = 20, className, bg = true }: P
 
   return (
     <div
-      className={cn(
-        "grid place-items-center rounded-xl shrink-0",
-        className,
-      )}
+      className={cn("grid place-items-center rounded-xl shrink-0", className)}
       style={{
         width: size + 20,
         height: size + 20,

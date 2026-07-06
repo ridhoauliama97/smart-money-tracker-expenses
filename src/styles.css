@@ -61,7 +61,7 @@
   --popover: oklch(0.19 0.012 270);
   --popover-foreground: oklch(0.98 0.005 260);
 
-  --primary: oklch(0.68 0.17 155);           /* emerald */
+  --primary: oklch(0.68 0.17 155); /* emerald */
   --primary-foreground: oklch(0.14 0.01 270);
 
   --secondary: oklch(0.26 0.015 270);
@@ -80,10 +80,10 @@
   --input: oklch(0.28 0.015 270);
   --ring: oklch(0.68 0.17 155);
 
-  --income: oklch(0.72 0.17 158);            /* emerald */
-  --expense: oklch(0.66 0.22 22);            /* rose/red */
-  --brand: oklch(0.65 0.19 285);             /* indigo/violet */
-  --brand-2: oklch(0.7 0.18 250);            /* blue-violet */
+  --income: oklch(0.72 0.17 158); /* emerald */
+  --expense: oklch(0.66 0.22 22); /* rose/red */
+  --brand: oklch(0.65 0.19 285); /* indigo/violet */
+  --brand-2: oklch(0.7 0.18 250); /* blue-violet */
 
   --chart-1: oklch(0.72 0.17 158);
   --chart-2: oklch(0.66 0.22 22);
@@ -121,11 +121,19 @@
 }
 
 @utility gradient-income {
-  background-image: linear-gradient(135deg, color-mix(in oklab, var(--income) 30%, transparent), transparent);
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--income) 30%, transparent),
+    transparent
+  );
 }
 
 @utility gradient-expense {
-  background-image: linear-gradient(135deg, color-mix(in oklab, var(--expense) 30%, transparent), transparent);
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--expense) 30%, transparent),
+    transparent
+  );
 }
 
 @utility card-elevated {
@@ -143,8 +151,14 @@
 }
 
 @keyframes count-pop {
-  0% { transform: translateY(6px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
+  0% {
+    transform: translateY(6px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .animate-count {

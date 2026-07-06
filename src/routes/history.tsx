@@ -1,19 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ChevronDown, Search } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { TransactionItem } from "@/components/TransactionItem";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { CategoryIcon } from "@/components/CategoryIcon";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useFinance } from "@/store/useFinance";
 import { formatDateLabel } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 export const Route = createFileRoute("/history")({
   head: () => ({
@@ -37,6 +42,24 @@ function History() {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [catFilter, setCatFilter] = useState<string>("all");
+
+  const expenseCategories = useMemo(
+    () => categories.filter((c) => c.type === "expense"),
+    [categories],
+  );
+  const incomeCategories = useMemo(
+    () => categories.filter((c) => c.type === "income"),
+    [categories],
+  );
+
+  useEffect(() => {
+    if (catFilter === "all") return;
+    if (filter === "all") return;
+    const cat = categories.find((c) => c.id === catFilter);
+    if (cat && cat.type !== filter) {
+      setCatFilter("all");
+    }
+  }, [filter, catFilter, categories]);
 
   const filtered = useMemo(() => {
     return transactions
@@ -99,19 +122,75 @@ function History() {
           ))}
         </div>
 
-        <Select value={catFilter} onValueChange={setCatFilter}>
-          <SelectTrigger className="h-11 rounded-xl border-border bg-surface px-3 text-sm">
-            <SelectValue placeholder="Semua kategori" />
-          </SelectTrigger>
-          <SelectContent className="max-h-72 rounded-xl border-border bg-surface">
-            <SelectItem value="all">Semua kategori</SelectItem>
-            {categories.map((c) => (
-              <SelectItem key={c.id} value={c.id}>
-                {c.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              className="h-11 w-full justify-between rounded-xl border-border bg-surface px-3 text-sm font-normal"
+            >
+              <span>
+                {catFilter === "all"
+                  ? "Semua Kategori"
+                  : (categories.find((c) => c.id === catFilter)?.name ?? "Semua Kategori")}
+              </span>
+              <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="w-(--radix-dropdown-menu-trigger-width) max-h-72 overflow-y-auto rounded-xl border-border bg-surface"
+            align="start"
+          >
+            <DropdownMenuRadioGroup value={catFilter} onValueChange={setCatFilter}>
+              <DropdownMenuRadioItem value="all" className="cursor-pointer pl-2 [&>span]:hidden">
+                Semua Kategori
+              </DropdownMenuRadioItem>
+
+              {(filter === "all" || filter === "expense") && expenseCategories.length > 0 && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground">
+                      Pengeluaran
+                    </DropdownMenuLabel>
+                    {expenseCategories.map((c) => (
+                      <DropdownMenuRadioItem
+                        key={c.id}
+                        value={c.id}
+                        className="cursor-pointer gap-3"
+                      >
+                        <CategoryIcon name={c.icon} color={c.color} size={16} bg={false} />
+                        {c.name}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuGroup>
+                </>
+              )}
+
+              {(filter === "all" || filter === "income") && incomeCategories.length > 0 && (
+                <>
+                  {filter === "all" &&
+                    expenseCategories.length > 0 &&
+                    incomeCategories.length > 0 && <DropdownMenuSeparator />}
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground">
+                      Pemasukan
+                    </DropdownMenuLabel>
+                    {incomeCategories.map((c) => (
+                      <DropdownMenuRadioItem
+                        key={c.id}
+                        value={c.id}
+                        className="cursor-pointer gap-3"
+                      >
+                        <CategoryIcon name={c.icon} color={c.color} size={16} bg={false} />
+                        {c.name}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuGroup>
+                </>
+              )}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div className="mt-4">

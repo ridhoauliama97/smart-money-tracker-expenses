@@ -78,9 +78,7 @@ export const useFinance = create<State>()(
         const existing = get().budgets.find((b) => b.categoryId === categoryId);
         if (existing) {
           set({
-            budgets: get().budgets.map((b) =>
-              b.id === existing.id ? { ...b, limit, period } : b,
-            ),
+            budgets: get().budgets.map((b) => (b.id === existing.id ? { ...b, limit, period } : b)),
           });
         } else {
           set({
@@ -110,9 +108,7 @@ export const useFinance = create<State>()(
     {
       name: "money-tracker-v1",
       storage: createJSONStorage(() =>
-        typeof window !== "undefined"
-          ? window.localStorage
-          : (noopStorage as unknown as Storage),
+        typeof window !== "undefined" ? window.localStorage : (noopStorage as unknown as Storage),
       ),
       partialize: (s) => ({
         transactions: s.transactions,

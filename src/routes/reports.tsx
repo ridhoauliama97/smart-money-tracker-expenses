@@ -26,7 +26,10 @@ export const Route = createFileRoute("/reports")({
   head: () => ({
     meta: [
       { title: "Laporan — Money Tracker" },
-      { name: "description", content: "Analisis pengeluaran, tren bulanan, dan ringkasan saldo Anda." },
+      {
+        name: "description",
+        content: "Analisis pengeluaran, tren bulanan, dan ringkasan saldo Anda.",
+      },
     ],
   }),
   component: () => (
@@ -134,9 +137,13 @@ function Reports() {
     const start = dates[0];
     const end = dates[dates.length - 1];
     const suffix =
-      period === "week" ? " (Minggu)" :
-      period === "month" ? " (Bulan)" :
-      period === "3m" ? " (3 Bulan)" : "";
+      period === "week"
+        ? " (Minggu)"
+        : period === "month"
+          ? " (Bulan)"
+          : period === "3m"
+            ? " (3 Bulan)"
+            : "";
     return `${formatDateLong(start)} – ${formatDateLong(end)}${suffix}`;
   }, [filtered, period]);
 
@@ -245,7 +252,13 @@ function Reports() {
           <ResponsiveContainer>
             <BarChart data={monthlyBars} barGap={4}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-              <XAxis dataKey="label" stroke="var(--muted-foreground)" fontSize={11} tickLine={false} axisLine={false} />
+              <XAxis
+                dataKey="label"
+                stroke="var(--muted-foreground)"
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+              />
               <YAxis
                 stroke="var(--muted-foreground)"
                 fontSize={11}
@@ -274,7 +287,13 @@ function Reports() {
             <ResponsiveContainer>
               <LineChart data={balanceLine}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-                <XAxis dataKey="date" stroke="var(--muted-foreground)" fontSize={11} tickLine={false} axisLine={false} />
+                <XAxis
+                  dataKey="date"
+                  stroke="var(--muted-foreground)"
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                />
                 <YAxis
                   stroke="var(--muted-foreground)"
                   fontSize={11}

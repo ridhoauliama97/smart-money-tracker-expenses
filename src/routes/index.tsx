@@ -57,8 +57,7 @@ function Home() {
       .map((b) => {
         const spent = transactions
           .filter(
-            (t) =>
-              t.type === "expense" && t.categoryId === b.categoryId && monthKey(t.date) === mk,
+            (t) => t.type === "expense" && t.categoryId === b.categoryId && monthKey(t.date) === mk,
           )
           .reduce((s, t) => s + t.amount, 0);
         const cat = categories.find((c) => c.id === b.categoryId);
@@ -89,10 +88,7 @@ function Home() {
           <div className="text-xs font-medium uppercase tracking-wider text-white/70">
             Total Saldo
           </div>
-          <div
-            key={balance}
-            className="tnum animate-count mt-1 text-3xl font-bold text-white"
-          >
+          <div key={balance} className="tnum animate-count mt-1 text-3xl font-bold text-white">
             {formatCurrency(balance, currency)}
           </div>
           <div className="mt-4 grid grid-cols-2 gap-3">
@@ -130,7 +126,11 @@ function Home() {
                       <span
                         className={cn(
                           "tnum text-xs font-semibold",
-                          pct >= 100 ? "text-expense" : pct >= 80 ? "text-amber-400" : "text-income",
+                          pct >= 100
+                            ? "text-expense"
+                            : pct >= 80
+                              ? "text-amber-400"
+                              : "text-income",
                         )}
                       >
                         {pct.toFixed(0)}%

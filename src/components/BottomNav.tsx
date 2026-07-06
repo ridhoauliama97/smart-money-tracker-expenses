@@ -24,7 +24,13 @@ export function BottomNav({ onAdd }: Props) {
       <div className="relative rounded-2xl card-elevated bg-surface/90 backdrop-blur-xl">
         <div className="grid grid-cols-5 items-center px-2 py-2">
           {items.slice(0, 2).map((it) => (
-            <NavItem key={it.to} to={it.to} label={it.label} Icon={it.icon} active={pathname === it.to} />
+            <NavItem
+              key={it.to}
+              to={it.to}
+              label={it.label}
+              Icon={it.icon}
+              active={pathname === it.to}
+            />
           ))}
           <div className="grid place-items-center">
             <button
@@ -37,7 +43,13 @@ export function BottomNav({ onAdd }: Props) {
             </button>
           </div>
           {items.slice(2).map((it) => (
-            <NavItem key={it.to} to={it.to} label={it.label} Icon={it.icon} active={pathname === it.to} />
+            <NavItem
+              key={it.to}
+              to={it.to}
+              label={it.label}
+              Icon={it.icon}
+              active={pathname === it.to}
+            />
           ))}
         </div>
       </div>

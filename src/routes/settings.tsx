@@ -181,11 +181,9 @@ function SettingsPage() {
         <div className="grid grid-cols-2 gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className="h-12 w-full rounded-xl border-border bg-surface"
-              >
-                <Download className="mr-2 h-4 w-4" /> Export <ChevronDown className="ml-auto h-4 w-4" />
+              <Button variant="outline" className="h-12 w-full rounded-xl border-border bg-surface">
+                <Download className="mr-2 h-4 w-4" /> Export{" "}
+                <ChevronDown className="ml-auto h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56">
@@ -232,8 +230,8 @@ function SettingsPage() {
             <AlertDialogHeader>
               <AlertDialogTitle>Reset semua data?</AlertDialogTitle>
               <AlertDialogDescription>
-                Semua transaksi, kategori kustom, dan budget akan dihapus. Tindakan ini
-                tidak dapat dibatalkan.
+                Semua transaksi, kategori kustom, dan budget akan dihapus. Tindakan ini tidak dapat
+                dibatalkan.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

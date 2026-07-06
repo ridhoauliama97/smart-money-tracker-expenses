@@ -19,9 +19,7 @@ function NotFoundComponent() {
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-foreground">Halaman tidak ditemukan</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Halaman yang Anda cari tidak ada.
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">Halaman yang Anda cari tidak ada.</p>
         <div className="mt-6">
           <Link
             to="/"
@@ -45,12 +43,8 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          Terjadi kesalahan
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Coba muat ulang halaman ini.
-        </p>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">Terjadi kesalahan</h1>
+        <p className="mt-2 text-sm text-muted-foreground">Coba muat ulang halaman ini.</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {

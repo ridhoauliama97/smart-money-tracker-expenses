@@ -20,9 +20,7 @@ export function TransactionItem({ tx, onClick }: Props) {
     <div className="group flex items-center gap-3 rounded-2xl px-3 py-2.5 transition-colors hover:bg-surface-2">
       <CategoryIcon name={cat?.icon ?? "Circle"} color={cat?.color} />
       <button onClick={onClick} className="min-w-0 flex-1 text-left">
-        <div className="truncate text-sm font-medium text-foreground">
-          {cat?.name ?? "Lainnya"}
-        </div>
+        <div className="truncate text-sm font-medium text-foreground">{cat?.name ?? "Lainnya"}</div>
         <div className="truncate text-xs text-muted-foreground">
           {tx.note ? tx.note : formatDateLong(tx.date)}
         </div>
@@ -36,9 +34,7 @@ export function TransactionItem({ tx, onClick }: Props) {
         >
           {tx.type === "income" ? "+" : "−"} {formatCurrency(tx.amount, currency)}
         </div>
-        <div className="tnum text-[10px] text-muted-foreground">
-          {formatTime(tx.createdAt)}
-        </div>
+        <div className="tnum text-[10px] text-muted-foreground">{formatTime(tx.createdAt)}</div>
       </div>
       <button
         onClick={() => deleteTransaction(tx.id)}

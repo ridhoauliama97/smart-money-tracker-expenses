@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { Delete, X } from "lucide-react";
+import { Delete, X, CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
@@ -9,6 +11,18 @@ import { CategoryIcon } from "./CategoryIcon";
 import { useFinance } from "@/store/useFinance";
 import { formatCurrency, formatDateLong, todayISO } from "@/lib/format";
 import type { TxType } from "@/lib/types";
+
+function isoToLocalDate(iso: string): Date {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, (m ?? 1) - 1, d ?? 1);
+}
+
+function localDateToISO(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
 
 interface Props {
   open: boolean;
@@ -20,6 +34,7 @@ export function AddTransactionSheet({ open, onOpenChange }: Props) {
   const [amount, setAmount] = useState<number>(0);
   const [categoryId, setCategoryId] = useState<string>("");
   const [date, setDate] = useState<string>(todayISO());
+  const [dateOpen, setDateOpen] = useState(false);
   const [note, setNote] = useState<string>("");
 
   const categories = useFinance((s) => s.categories);
@@ -102,7 +117,7 @@ export function AddTransactionSheet({ open, onOpenChange }: Props) {
         side="bottom"
         className="mx-auto flex h-[92vh] max-w-md flex-col rounded-t-3xl border-border bg-background p-0"
       >
-        <SheetHeader className="flex-row items-center justify-between border-b border-border/60 p-4">
+        {/* <SheetHeader className="flex-row items-center justify-between border-b border-border/60 p-4">
           <SheetTitle className="text-base">Transaksi Baru</SheetTitle>
           <button
             onClick={() => onOpenChange(false)}
@@ -111,8 +126,10 @@ export function AddTransactionSheet({ open, onOpenChange }: Props) {
           >
             <X className="h-5 w-5" />
           </button>
+        </SheetHeader> */}
+        <SheetHeader className="border-b border-border/60 p-4">
+          <SheetTitle className="text-base">Transaksi Baru</SheetTitle>
         </SheetHeader>
-
         <div className="flex-1 overflow-y-auto px-4 pb-4">
           {/* Type toggle */}
           <div className="mt-3 grid grid-cols-2 gap-1 rounded-xl bg-surface p-1">
@@ -181,15 +198,32 @@ export function AddTransactionSheet({ open, onOpenChange }: Props) {
               <label className="mb-1 block text-xs uppercase tracking-wider text-muted-foreground">
                 Tanggal
               </label>
-              <Input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="bg-surface"
-              />
-              <div className="mt-1 text-[11px] text-muted-foreground">
-                {formatDateLong(date)}
-              </div>
+              <Popover open={dateOpen} onOpenChange={setDateOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start rounded-xl border-border bg-surface font-normal text-foreground hover:bg-surface-2"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                    {formatDateLong(date)}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  className="w-auto rounded-xl border-border bg-surface p-0"
+                  align="start"
+                >
+                  <Calendar
+                    mode="single"
+                    selected={isoToLocalDate(date)}
+                    defaultMonth={isoToLocalDate(date)}
+                    onSelect={(d) => {
+                      if (!d) return;
+                      setDate(localDateToISO(d));
+                      setDateOpen(false);
+                    }}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
             <div>
               <label className="mb-1 block text-xs uppercase tracking-wider text-muted-foreground">
