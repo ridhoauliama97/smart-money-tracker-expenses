@@ -2,7 +2,7 @@
 
 Aplikasi pencatat keuangan pribadi (income & expense tracker) berbasis web, dengan tampilan mobile-first ala aplikasi native. Semua data tersimpan langsung di perangkat pengguna (`localStorage`) — tanpa backend, tanpa akun, tanpa server database.
 
-Dibangun dengan **TanStack Start** (React 19) dan di-generate/dikembangkan menggunakan [Lovable](https://lovable.dev).
+Dibangun dengan **TanStack Start** (React 19).
 
 ## ✨ Fitur
 
