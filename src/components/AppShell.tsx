@@ -4,6 +4,8 @@ import { AddTransactionSheet } from "./AddTransactionSheet";
 import { useFinance } from "@/store/useFinance";
 import { useAuth } from "@/store/useAuth";
 import { AuthGuard } from "./AuthGuard";
+import { TourGuide } from "./TourGuide";
+import { useTour } from "@/store/useTour";
 
 export const AddTransactionContext = createContext<() => void>(() => {});
 
@@ -45,6 +47,16 @@ export function AppShell({ children }: { children: ReactNode }) {
     }
   }, [initialized, user]);
 
+  useEffect(() => {
+    if (dataReady && user) {
+      const tour = useTour.getState();
+      if (!tour.completed) {
+        const timer = setTimeout(() => tour.start(), 600);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [dataReady, user]);
+
   return (
     <AuthGuard>
       <div className="min-h-screen bg-background">
@@ -59,6 +71,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
         <BottomNav onAdd={() => setAddOpen(true)} />
         <AddTransactionSheet open={addOpen} onOpenChange={setAddOpen} />
+        <TourGuide />
       </div>
     </AuthGuard>
   );

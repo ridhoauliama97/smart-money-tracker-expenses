@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useContext, useMemo, useState } from "react";
 import { IconReceipt } from "@tabler/icons-react";
 import { BanknoteArrowDown, BanknoteArrowUp, Eye, EyeOff, User } from "lucide-react";
@@ -143,21 +143,24 @@ function Home() {
             {profile?.name || user?.email || "Pengguna"}
           </div>
         </div>
-        <div className="relative hidden grid h-[42px] w-[42px] place-items-center rounded-[14px] border border-border/50 bg-surface">
+        <div className="relative grid h-10.5 w-10.5 place-items-center rounded-[14px] border border-border/50 bg-surface">
           <User className="h-5 w-5 text-muted-foreground" />
-          <div className="absolute right-[9px] top-[9px] h-[7px] w-[7px] rounded-full bg-lime shadow-[0_0_8px_var(--lime)]" />
+          <div className="absolute right-2.25 top-2.25 h-1.75 w-1.75 rounded-full bg-lime shadow-[0_0_8px_var(--lime)]" />
         </div>
       </div>
 
       {/* Hero card */}
-      <div className="relative mt-6 overflow-hidden rounded-[26px] border border-border/50 p-6 gradient-hero">
+      <div
+        data-tour="tour-balance"
+        className="relative mt-6 overflow-hidden rounded-[26px] border border-border/50 p-6 gradient-hero"
+      >
         <div
-          className="pointer-events-none absolute -right-[40%] -top-[40%] h-[220px] w-[220px] blur-sm"
+          className="pointer-events-none absolute right-[-40%] top-[-40%] h-55 w-55 blur-sm"
           style={{
             background: "radial-gradient(circle, rgba(200,255,82,0.18), transparent 70%)",
           }}
         />
-        <div className="relative z-[2]">
+        <div className="relative z-2">
           {/* Label + eye toggle */}
           <div className="flex items-center justify-between">
             <span className="text-[12px] font-medium uppercase tracking-[1.2px] text-muted-foreground">
@@ -166,13 +169,9 @@ function Home() {
             <button
               type="button"
               onClick={() => setHidden((h) => !h)}
-              className="grid h-[30px] w-[30px] place-items-center rounded-[9px] border border-border bg-surface text-foreground"
+              className="grid h-7.5 w-7.5 place-items-center rounded-[9px] border border-border bg-surface text-foreground"
             >
-              {hidden ? (
-                <EyeOff className="h-[15px] w-[15px]" />
-              ) : (
-                <Eye className="h-[15px] w-[15px]" />
-              )}
+              {hidden ? <EyeOff className="h-3.75 w-3.75" /> : <Eye className="h-3.75 w-3.75" />}
             </button>
           </div>
           {/* Balance */}
@@ -181,7 +180,7 @@ function Home() {
           </div>
           {/* Sparkline */}
           {sparklineBalances.length >= 2 && (
-            <div className="relative z-[2] mb-[18px] mt-[6px] h-[34px]">
+            <div className="relative z-2 mb-4.5 mt-1.5 h-8.5">
               <svg viewBox="0 0 300 34" preserveAspectRatio="none" className="h-full w-full">
                 <defs>
                   <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
@@ -207,7 +206,7 @@ function Home() {
             </div>
           )}
           {/* Stat chips */}
-          <div className="grid grid-cols-2 gap-[10px]">
+          <div className="grid grid-cols-2 gap-2.5">
             <StatMini
               label="Pemasukan"
               value={formatCurrency(incomeMonth, currency)}
@@ -278,7 +277,9 @@ function Home() {
           <h2 className="font-display text-base font-semibold text-foreground">
             Transaksi terbaru
           </h2>
-          <span className="text-[12.5px] font-medium text-teal">Lihat semua</span>
+          <Link to="/history" className="text-[12.5px] font-medium text-teal">
+            Lihat semua
+          </Link>
         </div>
         {recent.length === 0 ? (
           <Empty>
@@ -328,11 +329,11 @@ function StatMini({
 }) {
   const isIncome = variant === "income";
   return (
-    <div className="rounded-[16px] border border-border/50 bg-card p-3">
-      <div className="flex items-center gap-[7px]">
+    <div className="rounded-3xl border border-border/50 bg-card p-3">
+      <div className="flex items-center gap-1.75">
         <div
           className={cn(
-            "grid h-[22px] w-[22px] place-items-center rounded-[7px]",
+            "grid h-5.5 w-5.5 place-items-center rounded-[7px]",
             isIncome ? "bg-lime/15 text-lime" : "bg-coral/15 text-coral",
           )}
         >

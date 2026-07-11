@@ -54,7 +54,10 @@ export function BottomNav({ onAdd }: Props) {
       className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-md px-4 pb-[max(env(safe-area-inset-bottom),0.75rem)]"
       aria-label="Primary"
     >
-      <div className="relative flex h-[66px] items-center justify-between rounded-[22px] border border-border/50 bg-background/80 px-[18px] backdrop-blur-[14px]">
+      <div
+        className="relative flex h-[66px] items-center justify-between rounded-[22px] border border-border/50 bg-background/80 px-[18px] backdrop-blur-[14px]"
+        data-tour="tour-nav"
+      >
         {items.slice(0, 2).map((it) => (
           <NavItem
             key={it.to}
@@ -69,6 +72,7 @@ export function BottomNav({ onAdd }: Props) {
             type="button"
             onClick={onAdd}
             aria-label="Tambah transaksi"
+            data-tour="tour-add"
             className="-mt-7 grid h-[50px] w-[50px] place-items-center rounded-[16px] bg-gradient-to-br from-[#C8FF52] to-[#1FE5B8] text-[#0A0D14] shadow-[0_10px_24px_-6px_rgba(31,229,184,0.55)] transition-transform active:scale-95"
           >
             <Plus className="h-[22px] w-[22px]" />
@@ -83,6 +87,7 @@ export function BottomNav({ onAdd }: Props) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
+              data-tour="tour-profile"
               className={cn(
                 "flex cursor-pointer flex-col items-center gap-1 rounded-xl py-1.5 text-[11px] font-medium transition-colors",
                 pathname === "/profile" || pathname === "/settings"

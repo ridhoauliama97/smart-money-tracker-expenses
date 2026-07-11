@@ -1,11 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
+import { IconReceipt } from "@tabler/icons-react";
 import { AppShell } from "@/components/AppShell";
 import { TransactionItem } from "@/components/TransactionItem";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CategoryIcon } from "@/components/CategoryIcon";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { AddTransactionContext } from "@/components/AppShell";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,6 +49,7 @@ type Filter = "all" | "income" | "expense";
 function History() {
   const transactions = useFinance((s) => s.transactions);
   const categories = useFinance((s) => s.categories);
+  const openAdd = useContext(AddTransactionContext);
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [catFilter, setCatFilter] = useState<string>("all");
@@ -195,9 +206,20 @@ function History() {
 
       <div className="mt-4">
         {grouped.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-border/70 p-8 text-center text-sm text-muted-foreground">
-            Tidak ada transaksi yang cocok.
-          </div>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <IconReceipt />
+              </EmptyMedia>
+              <EmptyTitle>Belum Ada Transaksi</EmptyTitle>
+              <EmptyDescription>
+                Belum ada catatan transaksi. Tambah pemasukan atau pengeluaran pertama Anda.
+              </EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <Button onClick={openAdd}>Tambah Transaksi Baru</Button>
+            </EmptyContent>
+          </Empty>
         ) : (
           <div className="space-y-4">
             {grouped.map(([date, items]) => (

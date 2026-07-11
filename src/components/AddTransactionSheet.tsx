@@ -36,6 +36,7 @@ export function AddTransactionSheet({ open, onOpenChange }: Props) {
   const [date, setDate] = useState<string>(todayISO());
   const [dateOpen, setDateOpen] = useState(false);
   const [note, setNote] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
   const categories = useFinance((s) => s.categories);
   const budgets = useFinance((s) => s.budgets);
@@ -74,7 +75,7 @@ export function AddTransactionSheet({ open, onOpenChange }: Props) {
     }
   };
 
-  const submit = () => {
+  const submit = async () => {
     if (amount <= 0) {
       toast.error("Masukkan jumlah terlebih dahulu");
       return;
@@ -83,32 +84,40 @@ export function AddTransactionSheet({ open, onOpenChange }: Props) {
       toast.error("Pilih kategori");
       return;
     }
-    addTransaction({ type, amount, categoryId, date, note: note.trim() || undefined });
-    toast.success(type === "income" ? "Pemasukan ditambahkan" : "Pengeluaran ditambahkan");
+    setLoading(true);
+    try {
+      await addTransaction({ type, amount, categoryId, date, note: note.trim() || undefined });
+      toast.success(type === "income" ? "Pemasukan ditambahkan" : "Pengeluaran ditambahkan");
 
-    // Budget check
-    if (type === "expense") {
-      const budget = budgets.find((b) => b.categoryId === categoryId);
-      if (budget) {
-        const monthPrefix = date.slice(0, 7);
-        const spent =
-          transactions
-            .filter(
-              (t) =>
-                t.type === "expense" &&
-                t.categoryId === categoryId &&
-                t.date.startsWith(monthPrefix),
-            )
-            .reduce((sum, t) => sum + t.amount, 0) + amount;
-        const pct = (spent / budget.limit) * 100;
-        if (pct >= 100) {
-          toast.error(`Budget kategori ini sudah terlewati (${pct.toFixed(0)}%)`);
-        } else if (pct >= 80) {
-          toast.warning(`Budget kategori ini sudah ${pct.toFixed(0)}% terpakai`);
+      // Budget check
+      if (type === "expense") {
+        const budget = budgets.find((b) => b.categoryId === categoryId);
+        if (budget) {
+          const monthPrefix = date.slice(0, 7);
+          const spent =
+            transactions
+              .filter(
+                (t) =>
+                  t.type === "expense" &&
+                  t.categoryId === categoryId &&
+                  t.date.startsWith(monthPrefix),
+              )
+              .reduce((sum, t) => sum + t.amount, 0) + amount;
+          const pct = (spent / budget.limit) * 100;
+          if (pct >= 100) {
+            toast.error(`Budget kategori ini sudah terlewati (${pct.toFixed(0)}%)`);
+          } else if (pct >= 80) {
+            toast.warning(`Budget kategori ini sudah ${pct.toFixed(0)}% terpakai`);
+          }
         }
       }
+      onOpenChange(false);
+    } catch (e) {
+      toast.error("Gagal menyimpan transaksi");
+      console.error("[add transaction]", e);
+    } finally {
+      setLoading(false);
     }
-    onOpenChange(false);
   };
 
   return (
@@ -255,9 +264,10 @@ export function AddTransactionSheet({ open, onOpenChange }: Props) {
         <div className="border-t border-border/60 p-4">
           <Button
             onClick={submit}
-            className="h-12 w-full rounded-xl bg-primary text-primary-foreground hover:bg-primary/90"
+            disabled={loading}
+            className="h-12 w-full rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
           >
-            Simpan Transaksi
+            {loading ? "Menyimpan…" : "Simpan Transaksi"}
           </Button>
         </div>
       </SheetContent>

@@ -39,9 +39,13 @@ export function TransactionItem({ tx, onClick }: Props) {
         <div className="tnum text-[11px] text-muted-foreground">{formatTime(tx.createdAt)}</div>
       </div>
       <button
-        onClick={() => deleteTransaction(tx.id)}
+        onClick={() => {
+          if (window.confirm(`Hapus transaksi ini?`)) {
+            deleteTransaction(tx.id);
+          }
+        }}
         aria-label="Hapus"
-        className="ml-1 rounded-lg p-2 text-muted-foreground opacity-0 transition hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
+        className="ml-1 rounded-lg p-2 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
       >
         <Trash2 className="h-4 w-4" />
       </button>

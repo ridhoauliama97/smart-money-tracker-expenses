@@ -93,29 +93,155 @@ function Reports() {
 
   const totalExpense = pieData.reduce((s, d) => s + d.value, 0);
 
-  const monthlyBars = useMemo(() => {
-    const months: { key: string; label: string; income: number; expense: number }[] = [];
-    const now = new Date();
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-      months.push({
-        key,
-        label: d.toLocaleDateString("id-ID", { month: "short" }),
-        income: 0,
-        expense: 0,
-      });
+  const chartTitle = useMemo(() => {
+    switch (period) {
+      case "week":
+        return "Income vs Expense — 7 Hari";
+      case "month":
+        return "Income vs Expense — 30 Hari";
+      case "3m":
+        return "Income vs Expense — 3 Bulan";
+      case "custom":
+        return "Income vs Expense — Range Kustom";
     }
-    for (const t of transactions) {
-      const key = t.date.slice(0, 7);
-      const row = months.find((m) => m.key === key);
-      if (row) {
-        if (t.type === "income") row.income += t.amount;
-        else row.expense += t.amount;
+  }, [period]);
+
+  const monthlyBars = useMemo(() => {
+    const bars: { key: string; label: string; income: number; expense: number }[] = [];
+    if (filtered.length === 0) return bars;
+
+    if (period === "week") {
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const key = d.toISOString().slice(0, 10);
+        bars.push({
+          key,
+          label: d.toLocaleDateString("id-ID", { weekday: "short" }),
+          income: 0,
+          expense: 0,
+        });
+      }
+      for (const t of filtered) {
+        const row = bars.find((b) => b.key === t.date);
+        if (row) {
+          if (t.type === "income") row.income += t.amount;
+          else row.expense += t.amount;
+        }
+      }
+    } else if (period === "month") {
+      const count = 6;
+      for (let i = count - 1; i >= 0; i--) {
+        const end = new Date();
+        end.setDate(end.getDate() - i * 5);
+        const start = new Date(end);
+        start.setDate(start.getDate() - 4);
+        const key = start.toISOString().slice(0, 10);
+        bars.push({
+          key,
+          label: end.toLocaleDateString("id-ID", { day: "numeric", month: "short" }),
+          income: 0,
+          expense: 0,
+        });
+      }
+      for (const t of filtered) {
+        const row = bars.find((b) => t.date >= b.key);
+        if (row) {
+          if (t.type === "income") row.income += t.amount;
+          else row.expense += t.amount;
+        }
+      }
+    } else if (period === "3m") {
+      for (let i = 2; i >= 0; i--) {
+        const d = new Date();
+        d.setMonth(d.getMonth() - i);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+        bars.push({
+          key,
+          label: d.toLocaleDateString("id-ID", { month: "short" }),
+          income: 0,
+          expense: 0,
+        });
+      }
+      for (const t of filtered) {
+        const row = bars.find((b) => b.key === t.date.slice(0, 7));
+        if (row) {
+          if (t.type === "income") row.income += t.amount;
+          else row.expense += t.amount;
+        }
+      }
+    } else if (period === "custom") {
+      const from = new Date(customFrom);
+      const to = new Date(customTo);
+      const days = Math.ceil((to.getTime() - from.getTime()) / 86400000) + 1;
+
+      if (days <= 14) {
+        for (let i = 0; i < days; i++) {
+          const d = new Date(from);
+          d.setDate(d.getDate() + i);
+          const key = d.toISOString().slice(0, 10);
+          bars.push({
+            key,
+            label: d.toLocaleDateString("id-ID", { day: "numeric", month: "short" }),
+            income: 0,
+            expense: 0,
+          });
+        }
+        for (const t of filtered) {
+          const row = bars.find((b) => b.key === t.date);
+          if (row) {
+            if (t.type === "income") row.income += t.amount;
+            else row.expense += t.amount;
+          }
+        }
+      } else if (days <= 60) {
+        const count = Math.min(Math.ceil(days / 7), 8);
+        const step = Math.ceil(days / count);
+        for (let i = 0; i < count; i++) {
+          const d = new Date(from);
+          d.setDate(d.getDate() + i * step);
+          const key = d.toISOString().slice(0, 10);
+          bars.push({
+            key,
+            label: d.toLocaleDateString("id-ID", { day: "numeric", month: "short" }),
+            income: 0,
+            expense: 0,
+          });
+        }
+        for (const t of filtered) {
+          const row = [...bars].reverse().find((b) => t.date >= b.key);
+          if (row) {
+            if (t.type === "income") row.income += t.amount;
+            else row.expense += t.amount;
+          }
+        }
+      } else {
+        const monFrom = from.getFullYear() * 12 + from.getMonth();
+        const monTo = to.getFullYear() * 12 + to.getMonth();
+        const count = Math.min(monTo - monFrom + 1, 12);
+        for (let i = 0; i < count; i++) {
+          const m = monFrom + i;
+          const d = new Date(Math.floor(m / 12), m % 12, 1);
+          const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+          bars.push({
+            key,
+            label: d.toLocaleDateString("id-ID", { month: "short" }),
+            income: 0,
+            expense: 0,
+          });
+        }
+        for (const t of filtered) {
+          const row = bars.find((b) => b.key === t.date.slice(0, 7));
+          if (row) {
+            if (t.type === "income") row.income += t.amount;
+            else row.expense += t.amount;
+          }
+        }
       }
     }
-    return months;
-  }, [transactions]);
+
+    return bars;
+  }, [filtered, period, customFrom, customTo]);
 
   const balanceLine = useMemo(() => {
     const sorted = [...transactions].sort((a, b) => (a.date < b.date ? -1 : 1));
@@ -315,7 +441,7 @@ function Reports() {
       </Card>
 
       {/* Bars */}
-      <Card title="Income vs Expense — 6 Bulan">
+      <Card title={chartTitle}>
         <div className="h-56">
           <ResponsiveContainer>
             <BarChart data={monthlyBars} barGap={4}>
