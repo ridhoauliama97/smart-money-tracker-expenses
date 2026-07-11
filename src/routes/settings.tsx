@@ -10,6 +10,9 @@ import {
   Braces,
   Table,
   ChevronDown,
+  Monitor,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
@@ -142,6 +145,31 @@ function SettingsPage() {
         <div className="text-xs text-muted-foreground">Preferensi</div>
         <h1 className="text-2xl font-bold">Pengaturan</h1>
       </div>
+
+      {/* Theme */}
+      <Section title="Tema">
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { key: "system", label: "System", icon: Monitor },
+            { key: "light", label: "Terang", icon: Sun },
+            { key: "dark", label: "Gelap", icon: Moon },
+          ].map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              onClick={() => updateSettings({ theme: key as "system" | "light" | "dark" })}
+              className={
+                "flex flex-col items-center gap-1.5 rounded-xl border py-3 text-sm font-medium transition " +
+                (settings.theme === key
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border bg-surface text-muted-foreground hover:text-foreground")
+              }
+            >
+              <Icon className="h-5 w-5" />
+              {label}
+            </button>
+          ))}
+        </div>
+      </Section>
 
       {/* Currency */}
       <Section title="Mata Uang">

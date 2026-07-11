@@ -27,4 +27,5 @@ export interface Budget {
 
 export interface Settings {
   currency: "IDR" | "USD" | "EUR";
+  theme: "dark" | "light" | "system";
 }

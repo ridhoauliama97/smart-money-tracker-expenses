@@ -44,7 +44,7 @@ export const useFinance = create<State>()(
       transactions: [],
       categories: DEFAULT_CATEGORIES,
       budgets: [],
-      settings: { currency: "IDR" },
+      settings: { currency: "IDR", theme: "dark" },
       _hydrated: false,
 
       addTransaction: (tx) => {
@@ -94,7 +94,7 @@ export const useFinance = create<State>()(
           transactions: [],
           categories: DEFAULT_CATEGORIES,
           budgets: [],
-          settings: { currency: "IDR" },
+          settings: { currency: "IDR", theme: "dark" },
         }),
       importData: (data) =>
         set({

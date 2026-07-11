@@ -1,0 +1,269 @@
+{
+  "transactions": [
+    {
+      "type": "expense",
+      "amount": 5000,
+      "categoryId": "cat-food",
+      "date": "2026-07-08",
+      "note": "Beli es batu + kuku bima + susu putih",
+      "id": "fac0e80d-26ae-4556-bca9-5e09b1c961eb",
+      "createdAt": 1783558944952
+    },
+    {
+      "type": "expense",
+      "amount": 7000,
+      "categoryId": "cat-food",
+      "date": "2026-07-08",
+      "note": "Beli bakso",
+      "id": "1ac612b6-f58d-474a-9058-30ae0c1f167c",
+      "createdAt": 1783558890437
+    },
+    {
+      "type": "expense",
+      "amount": 13000,
+      "categoryId": "cat-food",
+      "date": "2026-07-07",
+      "note": "Beli kopi + Roti",
+      "id": "fe9863e7-e09c-4068-8dd1-3e8041915719",
+      "createdAt": 1783558830483
+    },
+    {
+      "type": "expense",
+      "amount": 12000,
+      "categoryId": "cat-food",
+      "date": "2026-07-08",
+      "note": "Beli Makan siang",
+      "id": "5bf369fe-9c4d-466d-b6d8-81b64c46410a",
+      "createdAt": 1783558801190
+    },
+    {
+      "type": "expense",
+      "amount": 13000,
+      "categoryId": "cat-food",
+      "date": "2026-07-07",
+      "note": "Ayam Geprek",
+      "id": "d8fc6f26-9287-4cfb-a8bd-748142558218",
+      "createdAt": 1783402488902
+    },
+    {
+      "type": "expense",
+      "amount": 70000,
+      "categoryId": "cat-other-exp",
+      "date": "2026-07-07",
+      "note": "Pembelian Kabel Kopling",
+      "id": "52839aa5-869f-406a-a727-e48f87e7b86d",
+      "createdAt": 1783387532779
+    },
+    {
+      "type": "expense",
+      "amount": 750000,
+      "categoryId": "16b3a00b-22e9-4035-8283-df81ffcac7e4",
+      "date": "2026-07-06",
+      "note": "Sisihkan Buat Tabungan",
+      "id": "0e8f2c40-0c64-4f15-8a1d-46d1e57e8795",
+      "createdAt": 1783341820497
+    },
+    {
+      "type": "expense",
+      "amount": 40000,
+      "categoryId": "cat-food",
+      "date": "2026-07-06",
+      "note": "Ayam Bakar + Kopi Kenangan + Just Mangga",
+      "id": "3877f402-199d-4448-8b74-f16c11088466",
+      "createdAt": 1783341754628
+    },
+    {
+      "type": "expense",
+      "amount": 125000,
+      "categoryId": "cat-entertainment",
+      "date": "2026-07-06",
+      "note": "Paket data 100 GB",
+      "id": "9b25221e-2bd7-4e75-b3c5-358499180c82",
+      "createdAt": 1783341712822
+    },
+    {
+      "type": "expense",
+      "amount": 14000,
+      "categoryId": "cat-food",
+      "date": "2026-07-05",
+      "note": "Roti & snack",
+      "id": "e91a97fc-72c9-4e74-87c3-67aa4eeb56c5",
+      "createdAt": 1783341669321
+    },
+    {
+      "type": "expense",
+      "amount": 185000,
+      "categoryId": "cat-shopping",
+      "date": "2026-07-05",
+      "note": "Rokok Helium 1 Slop",
+      "id": "e19ecb82-6161-4504-a7c8-94ca57dfb622",
+      "createdAt": 1783341644222
+    },
+    {
+      "type": "expense",
+      "amount": 250000,
+      "categoryId": "cat-bills",
+      "date": "2026-07-05",
+      "note": "Bayar Hutang Kak Kiki + Uang Jajan syafa & Gembul + Jajan Syufi",
+      "id": "fa33e42b-475a-4151-895b-a97cb7e1d351",
+      "createdAt": 1783341607231
+    },
+    {
+      "type": "expense",
+      "amount": 500000,
+      "categoryId": "cat-bills",
+      "date": "2026-07-06",
+      "note": "Bayar Uang Sewa Kosan Bulan 7",
+      "id": "31027808-70e8-4cdd-a1b3-d1c1f8454d1e",
+      "createdAt": 1783341562198
+    },
+    {
+      "type": "income",
+      "amount": 3098000,
+      "categoryId": "cat-salary",
+      "date": "2026-07-06",
+      "note": "Gajian Bulan Juni",
+      "id": "2666b03c-dd12-483a-8e20-c447e84611bf",
+      "createdAt": 1783341365304
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat-food",
+      "name": "Makanan",
+      "icon": "UtensilsCrossed",
+      "color": "#f97316",
+      "type": "expense"
+    },
+    {
+      "id": "cat-transport",
+      "name": "Transport",
+      "icon": "Car",
+      "color": "#3b82f6",
+      "type": "expense"
+    },
+    {
+      "id": "cat-shopping",
+      "name": "Belanja",
+      "icon": "ShoppingBag",
+      "color": "#ec4899",
+      "type": "expense"
+    },
+    {
+      "id": "cat-bills",
+      "name": "Tagihan",
+      "icon": "Receipt",
+      "color": "#eab308",
+      "type": "expense"
+    },
+    {
+      "id": "cat-entertainment",
+      "name": "Hiburan",
+      "icon": "Gamepad2",
+      "color": "#a855f7",
+      "type": "expense"
+    },
+    {
+      "id": "cat-health",
+      "name": "Kesehatan",
+      "icon": "HeartPulse",
+      "color": "#ef4444",
+      "type": "expense"
+    },
+    {
+      "id": "cat-other-exp",
+      "name": "Lainnya",
+      "icon": "MoreHorizontal",
+      "color": "#64748b",
+      "type": "expense"
+    },
+    {
+      "id": "cat-salary",
+      "name": "Gaji",
+      "icon": "Wallet",
+      "color": "#10b981",
+      "type": "income"
+    },
+    {
+      "id": "cat-bonus",
+      "name": "Bonus",
+      "icon": "Gift",
+      "color": "#22d3ee",
+      "type": "income"
+    },
+    {
+      "id": "cat-invest",
+      "name": "Investasi",
+      "icon": "TrendingUp",
+      "color": "#84cc16",
+      "type": "income"
+    },
+    {
+      "id": "cat-other-inc",
+      "name": "Lain-lain",
+      "icon": "Plus",
+      "color": "#14b8a6",
+      "type": "income"
+    },
+    {
+      "name": "Deposit Tabungan",
+      "icon": "Wallet",
+      "color": "#22d3ee",
+      "type": "expense",
+      "id": "16b3a00b-22e9-4035-8283-df81ffcac7e4"
+    }
+  ],
+  "budgets": [
+    {
+      "id": "77e0cb93-0ac8-4212-bf07-49b59c2567d3",
+      "categoryId": "cat-shopping",
+      "limit": 500000,
+      "period": "monthly"
+    },
+    {
+      "id": "5ce2c3c1-d89c-4401-8e2f-b14210bb26b3",
+      "categoryId": "cat-transport",
+      "limit": 200000,
+      "period": "monthly"
+    },
+    {
+      "id": "20207e42-bb6c-4e94-a72b-7a47d7c63bd3",
+      "categoryId": "cat-food",
+      "limit": 300000,
+      "period": "monthly"
+    },
+    {
+      "id": "4a5da107-2322-442e-bd67-66f392d9e53e",
+      "categoryId": "cat-bills",
+      "limit": 1000000,
+      "period": "monthly"
+    },
+    {
+      "id": "e4fd7f31-7204-4442-9b25-f1fc68a408fc",
+      "categoryId": "cat-entertainment",
+      "limit": 200000,
+      "period": "monthly"
+    },
+    {
+      "id": "2e676dff-7dbc-4d02-a58a-c7be3810013d",
+      "categoryId": "cat-health",
+      "limit": 150000,
+      "period": "monthly"
+    },
+    {
+      "id": "1f0f3d34-ad30-43a2-af74-6b5f38da09c2",
+      "categoryId": "cat-other-exp",
+      "limit": 200000,
+      "period": "monthly"
+    },
+    {
+      "id": "f1fe1437-ba6e-4dd9-8fe7-327d90c21ec5",
+      "categoryId": "16b3a00b-22e9-4035-8283-df81ffcac7e4",
+      "limit": 1000000,
+      "period": "monthly"
+    }
+  ],
+  "settings": {
+    "currency": "IDR"
+  }
+}

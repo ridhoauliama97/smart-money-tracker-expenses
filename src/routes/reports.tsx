@@ -337,7 +337,7 @@ function Reports() {
               <Tooltip
                 formatter={(v: number) => formatCurrency(v, currency)}
                 contentStyle={tooltipStyle}
-                cursor={{ fill: "rgba(255,255,255,0.04)" }}
+                cursor={{ fill: "color-mix(in oklab, var(--foreground) 4%, transparent)" }}
               />
               <Bar dataKey="income" fill="var(--income)" radius={[6, 6, 0, 0]} />
               <Bar dataKey="expense" fill="var(--expense)" radius={[6, 6, 0, 0]} />

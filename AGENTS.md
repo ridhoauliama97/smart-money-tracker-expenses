@@ -16,42 +16,43 @@
 ## Stack
 
 - **Framework**: TanStack Start (React 19, TanStack Router, TanStack Query)
-- **Runtime**: Bun (see `bunfig.toml` — 24h supply-chain guard)
+- **Runtime**: Bun (`bunfig.toml` — 24h supply-chain guard)
 - **UI**: shadcn/ui (new-york style), Radix, Tailwind CSS v4
 - **State**: zustand + persist (localStorage key: `money-tracker-v1`)
-- **Build**: Vite via `@lovable.dev/vite-tanstack-config` (includes tanstackStart, viteReact, tailwindcss, tsConfigPaths, nitro, etc. — **do not add these plugins manually**)
-- **Deploy target**: Cloudflare Workers (nitro preset `cloudflare-module`)
+- **Build**: Vite via `@lovable.dev/vite-tanstack-config` — do **not** add tanstackStart/viteReact/tailwindcss/tsConfigPaths/nitro plugins manually, they're bundled
+- **Deploy**: Cloudflare Workers (nitro preset `cloudflare-module`)
 
 ## Commands
 
-| Command                               | Action                            |
-| ------------------------------------- | --------------------------------- |
-| `bun dev`                             | Dev server (vite)                 |
-| `bun run build`                       | Production build                  |
-| `bun run build:dev`                   | Dev-mode build                    |
-| `bun run preview`                     | Preview build output              |
-| `bun run lint`                        | ESLint all files                  |
-| `bun run format`                      | Prettier --write all files        |
-| `npx wrangler --cwd ./.output dev`    | Preview Cloudflare Worker locally |
-| `npx wrangler --cwd ./.output deploy` | Deploy to Cloudflare Workers      |
+| Command                            | Action                                |
+| ---------------------------------- | ------------------------------------- |
+| `bun dev`                          | Dev server                            |
+| `bun run build`                    | Production build                      |
+| `bun run build:dev`                | Dev-mode build (`--mode development`) |
+| `bun run preview`                  | Preview build output                  |
+| `bun run lint`                     | ESLint all files (flat config)        |
+| `bun run format`                   | Prettier --write all files            |
+| `npx wrangler --cwd ./.output dev` | Preview Cloudflare Worker locally     |
 
-No test runner, no typecheck script. Add one if needed.
+## Gotchas
+
+- **No test runner, no typecheck script.** Add one if needed.
+- **`noUnusedLocals`/`noUnusedParameters` are `false`** in tsconfig, and `@typescript-eslint/no-unused-vars` is **off** in eslint. Unused vars are completely silent.
+- **Zustand `skipHydration: true`** — rehydrate manually in `AppShell` via `useFinance.persist.rehydrate()`. The `_hydrated` flag gates rendering (skeleton until ready).
+- **Theme (dark/light/system)** — controlled by `settings.theme` in zustand. A blocking inline script in `RootShell` reads localStorage to prevent flash. `ThemeSync` component handles `matchMedia` listener for system mode and updates `theme-color` meta. Default is `"dark"`.
+- **Tailwind v4 source scanning**: `@import "tailwindcss" source(none)` + `@source "../src"` — only `src/` is scanned.
+- **CSS is imported as URL**: `import appCss from "../styles.css?url"` in `RootShell` (`<link>`), not as a side-effect import.
+- **`routeTree.gen.ts`** is auto-generated (excluded from prettier). Never edit by hand.
+- **Budgets always default to "monthly"** — the store supports other periods but no UI exposes them.
+- **Locale**: Indonesian (labels, errors, empty states). Default currency: IDR. Month names are Indonesian.
+- **UID generation**: `crypto.randomUUID()` with `Math.random().toString(36).slice(2)` fallback.
+- **SSR error recovery**: `src/server.ts` intercepts swallowed h3 errors and renders an HTML error page instead of JSON 500.
+- **Do NOT import from `server-only`** — ESLint blocks it. Use `.server.ts` suffix instead.
+- **`resetAll()`** wipes all data, including custom categories (reverts to 12 defaults).
 
 ## Architecture
 
-- **All data is client-only** in localStorage. No backend database.
+- **All data is client-only** in localStorage. No backend.
 - Entry: `src/start.ts` → `src/router.tsx` → `src/routes/__root.tsx`
-- SSR server entry overridden by `src/server.ts` (configured via `vite.config.ts` `tanstackStart.server.entry = "server"`). Adds error-capture and renders an error page instead of JSON 500 responses.
-- Routes in `src/routes/`, file-based. `routeTree.gen.ts` is auto-generated — never edit by hand.
-- zustand store (`src/store/useFinance.ts`) uses `skipHydration: true` — rehydrate manually in `AppShell` via `useFinance.persist.rehydrate()`.
-- `@/*` path alias maps to `./src/*`.
-
-## Conventions
-
-- File-based routing: `src/routes/__root.tsx` is the root layout (not `app/layout.tsx`). See `src/routes/README.md`.
-- Do NOT import from `server-only` — ESLint blocks it. Use `.server.ts` file suffix instead.
-- `.prettierrc`: double quotes, semicolons, trailing commas, 100 print width.
-- CSS: Tailwind v4 `@import "tailwindcss"` syntax, `@theme` directive for custom tokens.
-- UI uses **Indonesian** language (labels, errors, empty states). Always dark mode (`html class="dark"`).
-- Export: jspdf for PDF, xlsx for Excel.
-- Lovable integration: `@lovable.dev/vite-tanstack-config` and error reporting hooks. Don't force-push or rewrite published git history.
+- Routes in `src/routes/`, file-based. See `src/routes/README.md` for naming conventions.
+- `@/*` path alias → `./src/*`

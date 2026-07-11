@@ -17,13 +17,13 @@ export function TransactionItem({ tx, onClick }: Props) {
   const cat = categories.find((c) => c.id === tx.categoryId);
 
   return (
-    <div className="group flex items-center gap-3 border-b border-white/[0.04] px-1 py-3 last:border-b-0">
+    <div className="group flex items-center gap-3 border-b border-border/30 px-1 py-3 last:border-b-0">
       <CategoryIcon name={cat?.icon ?? "Circle"} color={cat?.color} size={19} />
       <button onClick={onClick} className="min-w-0 flex-1 text-left">
-        <div className="truncate text-[14.5px] font-medium text-[#F3F5F8]">
+        <div className="truncate text-[14.5px] font-medium text-foreground">
           {cat?.name ?? "Lainnya"}
         </div>
-        <div className="mt-0.5 truncate text-xs text-[#565D70]">
+        <div className="mt-0.5 truncate text-xs text-muted-foreground">
           {tx.note ? tx.note : formatDateLong(tx.date)}
         </div>
       </button>
@@ -36,12 +36,12 @@ export function TransactionItem({ tx, onClick }: Props) {
         >
           {tx.type === "income" ? "+" : "−"} {formatCurrency(tx.amount, currency)}
         </div>
-        <div className="tnum text-[11px] text-[#565D70]">{formatTime(tx.createdAt)}</div>
+        <div className="tnum text-[11px] text-muted-foreground">{formatTime(tx.createdAt)}</div>
       </div>
       <button
         onClick={() => deleteTransaction(tx.id)}
         aria-label="Hapus"
-        className="ml-1 rounded-lg p-2 text-[#565D70] opacity-0 transition hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
+        className="ml-1 rounded-lg p-2 text-muted-foreground opacity-0 transition hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
       >
         <Trash2 className="h-4 w-4" />
       </button>

@@ -21,7 +21,7 @@ export function BottomNav({ onAdd }: Props) {
       className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-md px-4 pb-[max(env(safe-area-inset-bottom),0.75rem)]"
       aria-label="Primary"
     >
-      <div className="relative flex h-[66px] items-center justify-between rounded-[22px] border border-white/[0.07] bg-[rgba(19,23,34,0.85)] px-[18px] backdrop-blur-[14px]">
+      <div className="relative flex h-[66px] items-center justify-between rounded-[22px] border border-border/50 bg-background/80 px-[18px] backdrop-blur-[14px]">
         {items.slice(0, 2).map((it) => (
           <NavItem
             key={it.to}
@@ -71,7 +71,7 @@ function NavItem({
       to={to}
       className={cn(
         "flex flex-col items-center gap-1 rounded-xl py-1.5 text-[11px] font-medium transition-colors",
-        active ? "text-[#C8FF52]" : "text-muted-foreground hover:text-foreground",
+        active ? "text-lime" : "text-muted-foreground hover:text-foreground",
       )}
     >
       <Icon className="h-5 w-5" />

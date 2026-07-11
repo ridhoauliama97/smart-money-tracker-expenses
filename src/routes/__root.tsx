@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
+import { useFinance, useHydrated } from "@/store/useFinance";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -108,6 +109,11 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="id" className="dark">
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var e=JSON.parse(localStorage.getItem('money-tracker-v1')||'{}');var t=e.state&&e.state.settings&&e.state.settings.theme;if(t==='light'||(t==='system'&&!window.matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.classList.remove('dark')}catch(e){}})()`,
+          }}
+        />
         <HeadContent />
       </head>
       <body>
@@ -118,11 +124,50 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function ThemeSync() {
+  const theme = useFinance((s) => s.settings.theme);
+  const _hydrated = useHydrated();
+
+  useEffect(() => {
+    if (!_hydrated) return;
+
+    const root = document.documentElement;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const apply = (t: string) => {
+      if (t === "light") {
+        root.classList.remove("dark");
+      } else if (t === "dark") {
+        root.classList.add("dark");
+      } else if (mq.matches) {
+        root.classList.add("dark");
+      } else {
+        root.classList.remove("dark");
+      }
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) {
+        meta.setAttribute("content", root.classList.contains("dark") ? "#0A0A0B" : "#F8F9FA");
+      }
+    };
+
+    apply(theme);
+
+    if (theme === "system") {
+      const handler = () => apply("system");
+      mq.addEventListener("change", handler);
+      return () => mq.removeEventListener("change", handler);
+    }
+  }, [theme, _hydrated]);
+
+  return null;
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
+      <ThemeSync />
       <Outlet />
       <Toaster />
     </QueryClientProvider>
