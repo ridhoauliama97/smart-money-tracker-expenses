@@ -1,6 +1,27 @@
-import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, PieChart, List, Settings as SettingsIcon, Plus } from "lucide-react";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import {
+  Home,
+  PieChart,
+  List,
+  Plus,
+  CircleUser,
+  User,
+  Settings as SettingsIcon,
+  Bell,
+  LogOut,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/store/useAuth";
+import { useProfile } from "@/store/useProfile";
+import { toast } from "sonner";
 
 interface Props {
   onAdd: () => void;
@@ -10,11 +31,23 @@ const items = [
   { to: "/", label: "Home", icon: Home },
   { to: "/reports", label: "Reports", icon: PieChart },
   { to: "/history", label: "History", icon: List },
-  { to: "/settings", label: "Settings", icon: SettingsIcon },
 ] as const;
 
 export function BottomNav({ onAdd }: Props) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const user = useAuth((s) => s.user);
+  const profile = useProfile((s) => s.profile);
+  const signOut = useAuth((s) => s.signOut);
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate({ to: "/login" });
+    } catch {
+      toast.error("Gagal logout");
+    }
+  };
 
   return (
     <nav
@@ -41,15 +74,53 @@ export function BottomNav({ onAdd }: Props) {
             <Plus className="h-[22px] w-[22px]" />
           </button>
         </div>
-        {items.slice(2).map((it) => (
-          <NavItem
-            key={it.to}
-            to={it.to}
-            label={it.label}
-            Icon={it.icon}
-            active={pathname === it.to}
-          />
-        ))}
+        <NavItem
+          to={items[2].to}
+          label={items[2].label}
+          Icon={items[2].icon}
+          active={pathname === items[2].to}
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className={cn(
+                "flex cursor-pointer flex-col items-center gap-1 rounded-xl py-1.5 text-[11px] font-medium transition-colors",
+                pathname === "/profile" || pathname === "/settings"
+                  ? "text-lime"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <CircleUser className="h-5 w-5" />
+              <span>Profile</span>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="top" align="end" className="min-w-[180px]">
+            <DropdownMenuLabel className="truncate text-xs font-normal text-muted-foreground">
+              {profile?.name || user?.email}
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate({ to: "/profile" })}>
+              <User className="h-4 w-4" />
+              Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate({ to: "/settings" })}>
+              <SettingsIcon className="h-4 w-4" />
+              Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => toast.info("Fitur notifikasi segera hadir")}>
+              <Bell className="h-4 w-4" />
+              Notifications
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={handleLogout}
+              className="text-destructive focus:text-destructive"
+            >
+              <LogOut className="h-4 w-4" />
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </nav>
   );

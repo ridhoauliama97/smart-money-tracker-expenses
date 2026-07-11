@@ -10,6 +10,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { useFinance, useHydrated } from "@/store/useFinance";
+import { RealtimeSync } from "@/components/RealtimeSync";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -111,7 +112,7 @@ function RootShell({ children }: { children: ReactNode }) {
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var e=JSON.parse(localStorage.getItem('money-tracker-v1')||'{}');var t=e.state&&e.state.settings&&e.state.settings.theme;if(t==='light'||(t==='system'&&!window.matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.classList.remove('dark')}catch(e){}})()`,
+            __html: `(function(){try{var t=localStorage.getItem('money-tracker-theme');if(!t){var e=JSON.parse(localStorage.getItem('money-tracker-v1')||'{}');t=e.state&&e.state.settings&&e.state.settings.theme}if(t==='light'||(t==='system'&&!window.matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.classList.remove('dark')}catch(e){}})()`,
           }}
         />
         <HeadContent />
@@ -168,6 +169,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeSync />
+      <RealtimeSync />
       <Outlet />
       <Toaster />
     </QueryClientProvider>

@@ -278,7 +278,7 @@ function SettingsPage() {
       </Section>
 
       <div className="mt-8 text-center text-[11px] text-muted-foreground">
-        Money Tracker · Semua data disimpan di perangkat Anda
+        Money Tracker · Data tersimpan aman di cloud
       </div>
     </div>
   );

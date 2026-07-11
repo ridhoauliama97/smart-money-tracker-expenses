@@ -1,11 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { BanknoteArrowDown, BanknoteArrowUp, TrendingUp, Eye, EyeOff, User } from "lucide-react";
+import { useContext, useMemo, useState } from "react";
+import { IconReceipt } from "@tabler/icons-react";
+import { BanknoteArrowDown, BanknoteArrowUp, Eye, EyeOff, User } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { TransactionItem } from "@/components/TransactionItem";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { Progress } from "@/components/ui/progress";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { Button } from "@/components/ui/button";
+import { AddTransactionContext } from "@/components/AppShell";
 import { useFinance } from "@/store/useFinance";
+import { useAuth } from "@/store/useAuth";
+import { useProfile } from "@/store/useProfile";
 import { formatCurrency, formatDateLabel, monthKey, todayISO } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -26,8 +39,19 @@ export const Route = createFileRoute("/")({
   ),
 });
 
+function greetingByHour() {
+  const h = new Date().getHours();
+  if (h < 12) return "Selamat pagi!👋";
+  if (h <= 15) return "Selamat siang!👋";
+  if (h <= 18) return "Selamat sore!👋";
+  return "Selamat malam!👋";
+}
+
 function Home() {
   const [hidden, setHidden] = useState(false);
+  const openAdd = useContext(AddTransactionContext);
+  const user = useAuth((s) => s.user);
+  const profile = useProfile((s) => s.profile);
   const transactions = useFinance((s) => s.transactions);
   const budgets = useFinance((s) => s.budgets);
   const categories = useFinance((s) => s.categories);
@@ -114,9 +138,9 @@ function Home() {
       {/* Topbar */}
       <div className="flex items-start justify-between pt-2">
         <div>
-          <div className="text-[13px] text-muted-foreground">Selamat datang</div>
+          <div className="text-[13px] text-muted-foreground">{greetingByHour()}</div>
           <div className="mt-0.5 font-display text-[22px] font-semibold text-foreground">
-            Money Tracker
+            {profile?.name || user?.email || "Pengguna"}
           </div>
         </div>
         <div className="relative hidden grid h-[42px] w-[42px] place-items-center rounded-[14px] border border-border/50 bg-surface">
@@ -257,7 +281,21 @@ function Home() {
           <span className="text-[12.5px] font-medium text-teal">Lihat semua</span>
         </div>
         {recent.length === 0 ? (
-          <EmptyState />
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <IconReceipt />
+              </EmptyMedia>
+              <EmptyTitle>Belum Ada Transaksi</EmptyTitle>
+              <EmptyDescription>
+                Mulai catat pemasukan atau pengeluaran pertama Anda dengan mengetuk tombol{" "}
+                <span className="font-semibold">+</span> di bawah.
+              </EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <Button onClick={openAdd}>Tambah Transaksi Baru</Button>
+            </EmptyContent>
+          </Empty>
         ) : (
           <div className="space-y-3">
             {grouped.map(([date, items]) => (
@@ -307,20 +345,6 @@ function StatMini({
         <span className="text-[11.5px] text-muted-foreground">{label}</span>
       </div>
       <div className="mt-2 font-mono text-[15px] font-semibold text-foreground">{value}</div>
-    </div>
-  );
-}
-
-function EmptyState() {
-  return (
-    <div className="mt-6 flex flex-col items-center rounded-3xl border border-dashed border-border/50 p-8 text-center">
-      <div className="grid h-14 w-14 place-items-center rounded-2xl bg-surface">
-        <TrendingUp className="h-6 w-6 text-lime" />
-      </div>
-      <div className="mt-3 text-sm font-medium text-foreground">Belum ada transaksi</div>
-      <div className="mt-1 text-xs text-muted-foreground">
-        Ketuk tombol + di bawah untuk mencatat transaksi pertama Anda.
-      </div>
     </div>
   );
 }
