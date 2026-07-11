@@ -410,6 +410,8 @@ function Reports() {
                   <Tooltip
                     formatter={(v: number) => formatCurrency(v, currency)}
                     contentStyle={tooltipStyle}
+                    itemStyle={tooltipItemStyle}
+                    labelStyle={tooltipLabelStyle}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -463,6 +465,8 @@ function Reports() {
               <Tooltip
                 formatter={(v: number) => formatCurrency(v, currency)}
                 contentStyle={tooltipStyle}
+                itemStyle={tooltipItemStyle}
+                labelStyle={tooltipLabelStyle}
                 cursor={{ fill: "color-mix(in oklab, var(--foreground) 4%, transparent)" }}
               />
               <Bar dataKey="income" fill="var(--income)" radius={[6, 6, 0, 0]} />
@@ -498,6 +502,8 @@ function Reports() {
                 <Tooltip
                   formatter={(v: number) => formatCurrency(v, currency)}
                   contentStyle={tooltipStyle}
+                  itemStyle={tooltipItemStyle}
+                  labelStyle={tooltipLabelStyle}
                 />
                 <Line
                   type="monotone"
@@ -552,6 +558,8 @@ const tooltipStyle = {
   fontSize: 12,
   color: "var(--foreground)",
 };
+const tooltipItemStyle = { color: "var(--foreground)" };
+const tooltipLabelStyle = { color: "var(--foreground)" };
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (

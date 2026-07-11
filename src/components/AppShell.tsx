@@ -3,6 +3,7 @@ import { BottomNav } from "./BottomNav";
 import { AddTransactionSheet } from "./AddTransactionSheet";
 import { useFinance } from "@/store/useFinance";
 import { useAuth } from "@/store/useAuth";
+import { useProfile } from "@/store/useProfile";
 import { AuthGuard } from "./AuthGuard";
 import { TourGuide } from "./TourGuide";
 import { useTour } from "@/store/useTour";
@@ -32,6 +33,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       await migrateFromLocalStorage();
       if (!useFinance.getState()._hydrated) {
         await fetchAll();
+        await useProfile.getState().fetchProfile();
         useFinance.getState().setHydrated();
       }
       setDataReady(true);

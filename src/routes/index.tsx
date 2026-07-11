@@ -158,7 +158,7 @@ function Home() {
           {/* Label + eye toggle */}
           <div className="flex items-center justify-between">
             <span className="text-[12px] font-medium uppercase tracking-[1.2px] text-muted-foreground">
-              Total saldo
+              Saldo Saat Ini
             </span>
             <button
               type="button"
