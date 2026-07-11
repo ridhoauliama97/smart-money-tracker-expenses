@@ -8,8 +8,10 @@ import {
   User,
   Settings as SettingsIcon,
   Bell,
+  BellDot,
   LogOut,
 } from "lucide-react";
+import { useNotifications } from "@/store/useNotifications";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -28,9 +30,9 @@ interface Props {
 }
 
 const items = [
-  { to: "/", label: "Home", icon: Home },
-  { to: "/reports", label: "Reports", icon: PieChart },
-  { to: "/history", label: "History", icon: List },
+  { to: "/", label: "Beranda", icon: Home },
+  { to: "/reports", label: "Laporan", icon: PieChart },
+  { to: "/history", label: "Riwayat", icon: List },
 ] as const;
 
 export function BottomNav({ onAdd }: Props) {
@@ -39,6 +41,7 @@ export function BottomNav({ onAdd }: Props) {
   const user = useAuth((s) => s.user);
   const profile = useProfile((s) => s.profile);
   const signOut = useAuth((s) => s.signOut);
+  const unreadNotifCount = useNotifications((s) => s.notifications.filter((n) => !n.read).length);
 
   const handleLogout = async () => {
     try {
@@ -96,7 +99,7 @@ export function BottomNav({ onAdd }: Props) {
               )}
             >
               <CircleUser className="h-5 w-5" />
-              <span>Profile</span>
+              <span>Profil</span>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent side="top" align="end" className="min-w-[180px]">
@@ -106,15 +109,26 @@ export function BottomNav({ onAdd }: Props) {
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => navigate({ to: "/profile" })}>
               <User className="h-4 w-4" />
-              Profile
+              Profil
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate({ to: "/settings" })}>
               <SettingsIcon className="h-4 w-4" />
-              Settings
+              Pengaturan
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => toast.info("Fitur notifikasi segera hadir")}>
-              <Bell className="h-4 w-4" />
-              Notifications
+            <DropdownMenuItem onClick={() => navigate({ to: "/notifications" })}>
+              <div className="relative">
+                {unreadNotifCount > 0 ? (
+                  <BellDot className="h-4 w-4" />
+                ) : (
+                  <Bell className="h-4 w-4" />
+                )}
+              </div>
+              <span className="flex-1">Notifikasi</span>
+              {unreadNotifCount > 0 && (
+                <span className="grid h-5 min-w-5 place-items-center rounded-full bg-lime px-1 text-[10px] font-bold text-[#0A0D14]">
+                  {unreadNotifCount > 99 ? "99+" : unreadNotifCount}
+                </span>
+              )}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
@@ -122,7 +136,7 @@ export function BottomNav({ onAdd }: Props) {
               className="text-destructive focus:text-destructive"
             >
               <LogOut className="h-4 w-4" />
-              Logout
+              Keluar
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

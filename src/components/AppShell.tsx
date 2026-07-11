@@ -6,6 +6,7 @@ import { useAuth } from "@/store/useAuth";
 import { AuthGuard } from "./AuthGuard";
 import { TourGuide } from "./TourGuide";
 import { useTour } from "@/store/useTour";
+import { useNotifications, checkDailyReminder } from "@/store/useNotifications";
 
 export const AddTransactionContext = createContext<() => void>(() => {});
 
@@ -49,11 +50,26 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (dataReady && user) {
+      const timers: ReturnType<typeof setTimeout>[] = [];
+
       const tour = useTour.getState();
       if (!tour.completed) {
-        const timer = setTimeout(() => tour.start(), 600);
-        return () => clearTimeout(timer);
+        timers.push(setTimeout(() => tour.start(), 600));
       }
+
+      timers.push(
+        setTimeout(() => {
+          const notifState = useNotifications.getState();
+          checkDailyReminder(
+            useFinance.getState().transactions,
+            notifState.prefs,
+            notifState.notifications,
+            notifState.addNotification,
+          );
+        }, 1500),
+      );
+
+      return () => timers.forEach(clearTimeout);
     }
   }, [dataReady, user]);
 

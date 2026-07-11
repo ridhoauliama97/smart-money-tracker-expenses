@@ -4,6 +4,17 @@ import type { Transaction } from "@/lib/types";
 import { useFinance } from "@/store/useFinance";
 import { formatCurrency, formatDateLong, formatTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./ui/alert-dialog";
 
 interface Props {
   tx: Transaction;
@@ -38,17 +49,33 @@ export function TransactionItem({ tx, onClick }: Props) {
         </div>
         <div className="tnum text-[11px] text-muted-foreground">{formatTime(tx.createdAt)}</div>
       </div>
-      <button
-        onClick={() => {
-          if (window.confirm(`Hapus transaksi ini?`)) {
-            deleteTransaction(tx.id);
-          }
-        }}
-        aria-label="Hapus"
-        className="ml-1 rounded-lg p-2 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
-      >
-        <Trash2 className="h-4 w-4" />
-      </button>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <button
+            aria-label="Hapus"
+            className="ml-1 rounded-lg p-2 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus transaksi?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah kamu yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteTransaction(tx.id)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

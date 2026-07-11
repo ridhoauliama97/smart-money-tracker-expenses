@@ -24,6 +24,12 @@ export function parseAmountInput(input: string): number {
   return cleaned ? parseInt(cleaned, 10) : 0;
 }
 
+export function formatNumberInput(value: string): string {
+  const digits = value.replace(/\D/g, "");
+  if (!digits) return "";
+  return Number(digits).toLocaleString("id-ID");
+}
+
 export function formatDateLabel(iso: string): string {
   const d = new Date(iso);
   const today = new Date();

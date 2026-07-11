@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   Download,
@@ -35,6 +35,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useFinance } from "@/store/useFinance";
+import { appVersion } from "@/lib/version";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -54,7 +55,8 @@ function SettingsPage() {
   const settings = useFinance((s) => s.settings);
   const updateSettings = useFinance((s) => s.updateSettings);
   const resetAll = useFinance((s) => s.resetAll);
-  const importData = useFinance((s) => s.importData);
+  const importBackup = useFinance((s) => s.importBackup);
+  const [importing, setImporting] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const exportBackup = () => {
@@ -78,15 +80,17 @@ function SettingsPage() {
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setImporting(true);
     try {
       const text = await file.text();
       const data = JSON.parse(text);
-      importData(data);
+      await importBackup(data);
       toast.success("Data berhasil diimpor");
     } catch {
-      toast.error("Gagal membaca file backup");
+      toast.error("Gagal mengimpor file backup");
     } finally {
       e.target.value = "";
+      setImporting(false);
     }
   };
 
@@ -231,10 +235,11 @@ function SettingsPage() {
           </DropdownMenu>
           <Button
             variant="outline"
+            disabled={importing}
             onClick={() => fileRef.current?.click()}
             className="h-12 rounded-xl border-border bg-surface"
           >
-            <Upload className="mr-2 h-4 w-4" /> Import
+            <Upload className="mr-2 h-4 w-4" /> {importing ? "Mengimpor..." : "Import"}
           </Button>
           <input
             ref={fileRef}
@@ -278,7 +283,16 @@ function SettingsPage() {
       </Section>
 
       <div className="mt-8 text-center text-[11px] text-muted-foreground">
-        Money Tracker · Data tersimpan aman di cloud
+        Money Tracker v{appVersion} <br /> Build and Maintain with Care by{" "}
+        <a
+          href="https://github.com/ridhoauliama97"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline underline-offset-2 hover:text-foreground"
+        >
+          Ridho
+        </a>
+        .
       </div>
     </div>
   );

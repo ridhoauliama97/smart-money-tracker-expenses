@@ -34,6 +34,7 @@ interface State {
   updateSettings: (patch: Partial<Settings>) => Promise<void>;
   resetAll: () => Promise<void>;
   importData: (data: Partial<State>) => void;
+  importBackup: (data: Partial<State>) => Promise<void>;
   setHydrated: () => void;
   fetchAll: () => Promise<void>;
   migrateFromLocalStorage: () => Promise<void>;
@@ -318,6 +319,47 @@ export const useFinance = create<State>()((set, get) => ({
       budgets: data.budgets ?? get().budgets,
       settings: data.settings ?? get().settings,
     }),
+
+  importBackup: async (data) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error("Not authenticated");
+
+    const deletes: Promise<object>[] = [];
+    if (data.transactions)
+      deletes.push(supabase.from("transactions").delete().eq("user_id", user.id));
+    if (data.categories) deletes.push(supabase.from("categories").delete().eq("user_id", user.id));
+    if (data.budgets) deletes.push(supabase.from("budgets").delete().eq("user_id", user.id));
+    await Promise.all(deletes);
+
+    if (data.categories && data.categories.length > 0) {
+      const { error } = await supabase
+        .from("categories")
+        .insert(data.categories.map((c) => toDbCategory(c, user.id)));
+      if (error) throw error;
+    }
+
+    if (data.transactions && data.transactions.length > 0) {
+      const { error } = await supabase
+        .from("transactions")
+        .insert(data.transactions.map((t) => toDbTransaction(t, user.id)));
+      if (error) throw error;
+    }
+
+    if (data.budgets && data.budgets.length > 0) {
+      const { error } = await supabase
+        .from("budgets")
+        .insert(data.budgets.map((b) => toDbBudget(b, user.id)));
+      if (error) throw error;
+    }
+
+    if (data.settings) {
+      await supabase.from("user_settings").upsert({ user_id: user.id, ...data.settings });
+    }
+
+    await get().fetchAll();
+  },
 
   setHydrated: () => set({ _hydrated: true }),
 

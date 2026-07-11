@@ -1,7 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useContext, useMemo, useState } from "react";
 import { IconReceipt } from "@tabler/icons-react";
-import { BanknoteArrowDown, BanknoteArrowUp, Eye, EyeOff, User } from "lucide-react";
+import { BanknoteArrowDown, BanknoteArrowUp, Eye, EyeOff } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { TransactionItem } from "@/components/TransactionItem";
 import { CategoryIcon } from "@/components/CategoryIcon";
@@ -136,16 +136,10 @@ function Home() {
   return (
     <div className="p-4">
       {/* Topbar */}
-      <div className="flex items-start justify-between pt-2">
-        <div>
-          <div className="text-[13px] text-muted-foreground">{greetingByHour()}</div>
-          <div className="mt-0.5 font-display text-[22px] font-semibold text-foreground">
-            {profile?.name || user?.email || "Pengguna"}
-          </div>
-        </div>
-        <div className="relative grid h-10.5 w-10.5 place-items-center rounded-[14px] border border-border/50 bg-surface">
-          <User className="h-5 w-5 text-muted-foreground" />
-          <div className="absolute right-2.25 top-2.25 h-1.75 w-1.75 rounded-full bg-lime shadow-[0_0_8px_var(--lime)]" />
+      <div className="pt-2">
+        <div className="text-[13px] text-muted-foreground">{greetingByHour()}</div>
+        <div className="mt-0.5 font-display text-[22px] font-semibold text-foreground">
+          {profile?.name || user?.email || "Pengguna"}
         </div>
       </div>
 

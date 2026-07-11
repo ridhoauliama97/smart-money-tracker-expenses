@@ -17,7 +17,13 @@ import {
 } from "@/components/ui/dialog";
 import { COLOR_CHOICES, ICON_CHOICES } from "@/lib/defaults";
 import { useFinance } from "@/store/useFinance";
-import { formatCurrency, monthKey, todayISO, parseAmountInput } from "@/lib/format";
+import {
+  formatCurrency,
+  formatNumberInput,
+  monthKey,
+  todayISO,
+  parseAmountInput,
+} from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { TxType } from "@/lib/types";
 
@@ -176,7 +182,7 @@ function CategoriesPage() {
                         autoFocus
                         inputMode="numeric"
                         value={budgetInput}
-                        onChange={(e) => setBudgetInput(e.target.value)}
+                        onChange={(e) => setBudgetInput(formatNumberInput(e.target.value))}
                         placeholder="Limit budget"
                         className="bg-background"
                       />
@@ -199,7 +205,7 @@ function CategoriesPage() {
                       <button
                         onClick={() => {
                           setEditing(cat.id);
-                          setBudgetInput(budget ? String(budget.limit) : "");
+                          setBudgetInput(budget ? formatNumberInput(String(budget.limit)) : "");
                         }}
                         className="rounded-lg bg-surface-2 px-3 py-1.5 text-xs font-medium"
                       >

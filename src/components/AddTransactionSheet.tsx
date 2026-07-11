@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CategoryIcon } from "./CategoryIcon";
 import { useFinance } from "@/store/useFinance";
+import { useNotifications, checkAndNotifyAfterTransaction } from "@/store/useNotifications";
 import { formatCurrency, formatDateLong, todayISO } from "@/lib/format";
 import type { TxType } from "@/lib/types";
 
@@ -43,6 +44,8 @@ export function AddTransactionSheet({ open, onOpenChange }: Props) {
   const transactions = useFinance((s) => s.transactions);
   const addTransaction = useFinance((s) => s.addTransaction);
   const currency = useFinance((s) => s.settings.currency);
+  const notifPrefs = useNotifications((s) => s.prefs);
+  const addNotif = useNotifications((s) => s.addNotification);
 
   const filteredCats = useMemo(
     () => categories.filter((c) => c.type === type || c.type === "both"),
@@ -86,10 +89,16 @@ export function AddTransactionSheet({ open, onOpenChange }: Props) {
     }
     setLoading(true);
     try {
-      await addTransaction({ type, amount, categoryId, date, note: note.trim() || undefined });
+      const newTx = await addTransaction({
+        type,
+        amount,
+        categoryId,
+        date,
+        note: note.trim() || undefined,
+      });
       toast.success(type === "income" ? "Pemasukan ditambahkan" : "Pengeluaran ditambahkan");
 
-      // Budget check
+      // Budget check + notification
       if (type === "expense") {
         const budget = budgets.find((b) => b.categoryId === categoryId);
         if (budget) {
@@ -110,6 +119,15 @@ export function AddTransactionSheet({ open, onOpenChange }: Props) {
             toast.warning(`Budget kategori ini sudah ${pct.toFixed(0)}% terpakai`);
           }
         }
+
+        checkAndNotifyAfterTransaction(
+          newTx,
+          budgets,
+          categories,
+          transactions,
+          notifPrefs,
+          addNotif,
+        );
       }
       onOpenChange(false);
     } catch (e) {
