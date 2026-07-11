@@ -18,7 +18,8 @@
 - **Framework**: TanStack Start (React 19, TanStack Router, TanStack Query)
 - **Runtime**: Bun (`bunfig.toml` — 24h supply-chain guard)
 - **UI**: shadcn/ui (new-york style), Radix, Tailwind CSS v4
-- **State**: zustand + persist (localStorage key: `money-tracker-v1`)
+- **State**: zustand — `useFinance` (no persist), `useAuth`, `useProfile` (no persist), `useNotifications` (persist: `money-tracker-notifications-v1`), `useTour` (persist: `money-tracker-tour-v1`)
+- **Backend**: Supabase (auth, data persistence, real-time sync)
 - **Build**: Vite via `@lovable.dev/vite-tanstack-config` — do **not** add tanstackStart/viteReact/tailwindcss/tsConfigPaths/nitro plugins manually, they're bundled
 - **Deploy**: Cloudflare Workers (nitro preset `cloudflare-module`)
 
@@ -26,7 +27,7 @@
 
 | Command                            | Action                                |
 | ---------------------------------- | ------------------------------------- |
-| `bun dev`                          | Dev server                            |
+| `bun dev`                          | Dev server (runs `gen-version` first) |
 | `bun run build`                    | Production build                      |
 | `bun run build:dev`                | Dev-mode build (`--mode development`) |
 | `bun run preview`                  | Preview build output                  |
@@ -36,23 +37,27 @@
 
 ## Gotchas
 
+- **Supabase is the data backend.** The `useFinance` store calls Supabase REST for all CRUD. localStorage is only used for (a) migrating legacy data from `money-tracker-v1` on first login, and (b) a theme side-channel key `money-tracker-theme`. Notifications and tour stores still use zustand/persist.
+- **Auth required.** `AuthGuard` in `AppShell` redirects unauthenticated users to `/login`. `useAuth.initialize()` runs on mount via `supabase.auth.getSession()` + `onAuthStateChange`.
+- **Hydration flow**: `AppShell` → `migrateFromLocalStorage()` → `fetchAll()` (loads all Supabase data) → `setHydrated()`. The `_hydrated` flag gates rendering (skeleton until ready).
+- **Real-time sync**: `RealtimeSync` subscribes to Postgres changes on `transactions`, `categories`, `budgets`, `user_settings` tables per user.
 - **No test runner, no typecheck script.** Add one if needed.
 - **`noUnusedLocals`/`noUnusedParameters` are `false`** in tsconfig, and `@typescript-eslint/no-unused-vars` is **off** in eslint. Unused vars are completely silent.
-- **Zustand `skipHydration: true`** — rehydrate manually in `AppShell` via `useFinance.persist.rehydrate()`. The `_hydrated` flag gates rendering (skeleton until ready).
-- **Theme (dark/light/system)** — controlled by `settings.theme` in zustand. A blocking inline script in `RootShell` reads localStorage to prevent flash. `ThemeSync` component handles `matchMedia` listener for system mode and updates `theme-color` meta. Default is `"dark"`.
+- **`gen-version` runs before dev/build**: `scripts/gen-version.js` writes `src/lib/version.ts` from git commit count + short hash.
+- **Theme (dark/light/system)** — controlled by `settings.theme` in zustand. A blocking inline script in `RootShell` reads localStorage (`money-tracker-theme` key) to prevent flash. `ThemeSync` component handles `matchMedia` listener for system mode and updates `theme-color` meta. Default is `"dark"`.
 - **Tailwind v4 source scanning**: `@import "tailwindcss" source(none)` + `@source "../src"` — only `src/` is scanned.
 - **CSS is imported as URL**: `import appCss from "../styles.css?url"` in `RootShell` (`<link>`), not as a side-effect import.
 - **`routeTree.gen.ts`** is auto-generated (excluded from prettier). Never edit by hand.
-- **Budgets always default to "monthly"** — the store supports other periods but no UI exposes them.
 - **Locale**: Indonesian (labels, errors, empty states). Default currency: IDR. Month names are Indonesian.
 - **UID generation**: `crypto.randomUUID()` with `Math.random().toString(36).slice(2)` fallback.
 - **SSR error recovery**: `src/server.ts` intercepts swallowed h3 errors and renders an HTML error page instead of JSON 500.
 - **Do NOT import from `server-only`** — ESLint blocks it. Use `.server.ts` suffix instead.
-- **`resetAll()`** wipes all data, including custom categories (reverts to 12 defaults).
+- **`resetAll()`** wipes all Supabase data (transactions, budgets, categories) and re-seeds 12 default categories.
+- **Icons**: Primary icon library is `lucide-react` (defaults.ts icon names map to lucide icons). `@tabler/icons-react` is used sparingly in `history.tsx` and `index.tsx` (`IconReceipt`).
 
 ## Architecture
 
-- **All data is client-only** in localStorage. No backend.
 - Entry: `src/start.ts` → `src/router.tsx` → `src/routes/__root.tsx`
 - Routes in `src/routes/`, file-based. See `src/routes/README.md` for naming conventions.
 - `@/*` path alias → `./src/*`
+- Build artifacts (`.output`, `.vinxi`, `.tanstack/`) are gitignored.

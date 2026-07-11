@@ -10,6 +10,7 @@ import {
   Bell,
   BellDot,
   LogOut,
+  MessageSquareText,
 } from "lucide-react";
 import { useNotifications } from "@/store/useNotifications";
 import { cn } from "@/lib/utils";
@@ -129,6 +130,10 @@ export function BottomNav({ onAdd }: Props) {
                   {unreadNotifCount > 99 ? "99+" : unreadNotifCount}
                 </span>
               )}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate({ to: "/feedback" })}>
+              <MessageSquareText className="h-4 w-4" />
+              Feedback
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
